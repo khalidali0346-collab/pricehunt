@@ -1,10 +1,11 @@
 const SOURCES = [
   { id: "all", label: "All Sources", icon: "⚡" },
-  { id: "ebay", label: "eBay", icon: "🛒" },
-  { id: "walmart", label: "Walmart", icon: "🏪" },
-  { id: "google", label: "Google Shopping", icon: "🔍" },
-  { id: "craigslist", label: "Craigslist", icon: "📍" },
-  { id: "instagram", label: "Instagram", icon: "📸" },
+  { id: "amazon", label: "Amazon.ae", icon: "🛒" },
+  { id: "noon", label: "Noon", icon: "🌙" },
+  { id: "carrefour", label: "Carrefour", icon: "🏪" },
+  { id: "sharafdg", label: "Sharaf DG", icon: "📱" },
+  { id: "dubizzle", label: "Dubizzle", icon: "📍" },
+  { id: "opensooq", label: "OpenSooq", icon: "🗺️" },
 ];
 
 const SORT_OPTIONS = [
@@ -14,24 +15,8 @@ const SORT_OPTIONS = [
 
 export default function FilterBar({ activeSource, setActiveSource, sortBy, setSortBy, resultCount }) {
   return (
-    <div
-      style={{
-        maxWidth: "960px",
-        margin: "24px auto 0",
-        padding: "0 8px",
-        animation: "fadeIn 0.4s ease 0.1s both",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Source filters */}
+    <div style={{ maxWidth: "960px", margin: "24px auto 0", padding: "0 8px", animation: "fadeIn 0.4s ease 0.1s both" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           {SOURCES.map((src) => {
             const active = activeSource === src.id;
@@ -40,9 +25,7 @@ export default function FilterBar({ activeSource, setActiveSource, sortBy, setSo
                 key={src.id}
                 onClick={() => setActiveSource(src.id)}
                 style={{
-                  background: active
-                    ? "linear-gradient(135deg, var(--accent), var(--accent2))"
-                    : "var(--bg-card)",
+                  background: active ? "linear-gradient(135deg, var(--accent), var(--accent2))" : "var(--bg-card)",
                   border: `1px solid ${active ? "transparent" : "var(--border)"}`,
                   borderRadius: "999px",
                   color: active ? "#fff" : "var(--text-muted)",
@@ -62,8 +45,6 @@ export default function FilterBar({ activeSource, setActiveSource, sortBy, setSo
             );
           })}
         </div>
-
-        {/* Right side: result count + sort */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>
             {resultCount} result{resultCount !== 1 ? "s" : ""}
@@ -83,9 +64,7 @@ export default function FilterBar({ activeSource, setActiveSource, sortBy, setSo
             }}
           >
             {SORT_OPTIONS.map((opt) => (
-              <option key={opt.id} value={opt.id}>
-                {opt.label}
-              </option>
+              <option key={opt.id} value={opt.id}>{opt.label}</option>
             ))}
           </select>
         </div>

@@ -1,5 +1,7 @@
 import { useRef } from "react";
 
+const UAE_CITIES = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Riyadh", "Jeddah", "Kuwait", "Doha", "Muscat", "Cairo", "Amman", "Beirut"];
+
 export default function SearchBar({ onSearch, query, setQuery, location, setLocation, loading }) {
   const inputRef = useRef(null);
 
@@ -9,14 +11,7 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "720px",
-        margin: "40px auto 0",
-        padding: "0 8px",
-        animation: "fadeIn 0.5s ease",
-      }}
-    >
+    <div style={{ maxWidth: "720px", margin: "40px auto 0", padding: "0 8px", animation: "fadeIn 0.5s ease" }}>
       <div style={{ textAlign: "center", marginBottom: "28px" }}>
         <h2
           style={{
@@ -30,10 +25,10 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
             animation: "gradientShift 4s ease infinite",
           }}
         >
-          Find the Best Price
+          Find the Best Price in UAE & MENA
         </h2>
         <p style={{ color: "var(--text-muted)", marginTop: "8px", fontSize: "15px" }}>
-          We search eBay, Walmart, Google Shopping, Craigslist &amp; Instagram simultaneously
+          Search Amazon.ae, Noon, Carrefour, Sharaf DG, Dubizzle & OpenSooq
         </p>
       </div>
 
@@ -50,22 +45,13 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
             boxShadow: "0 0 40px rgba(139,92,246,0.08)",
             transition: "border-color 0.2s, box-shadow 0.2s",
           }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--accent)";
-            e.currentTarget.style.boxShadow = "0 0 40px var(--accent-glow)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "var(--border)";
-            e.currentTarget.style.boxShadow = "0 0 40px rgba(139,92,246,0.08)";
-          }}
         >
-          {/* Item search row */}
           <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
             <span style={{ padding: "0 8px 0 12px", fontSize: "18px", opacity: 0.6 }}>🔍</span>
             <input
               ref={inputRef}
               type="text"
-              placeholder="What are you looking for? e.g. iPhone 15 Pro..."
+              placeholder="What are you looking for? e.g. iPhone 15, Nike Air Max..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               autoFocus
@@ -81,7 +67,6 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
             />
           </div>
 
-          {/* Location + submit row */}
           <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
             <div
               style={{
@@ -96,9 +81,10 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
               <span style={{ fontSize: "14px", opacity: 0.5, marginRight: "8px" }}>📍</span>
               <input
                 type="text"
-                placeholder="City for local results (e.g. New York)"
+                placeholder="City (e.g. Dubai, Abu Dhabi, Riyadh...)"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                list="uae-cities"
                 style={{
                   flex: 1,
                   background: "transparent",
@@ -109,14 +95,15 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
                   padding: "8px 0",
                 }}
               />
+              <datalist id="uae-cities">
+                {UAE_CITIES.map((c) => <option key={c} value={c} />)}
+              </datalist>
             </div>
             <button
               type="submit"
               disabled={loading || !query.trim()}
               style={{
-                background: loading
-                  ? "rgba(139,92,246,0.3)"
-                  : "linear-gradient(135deg, var(--accent), var(--accent2))",
+                background: loading ? "rgba(139,92,246,0.3)" : "linear-gradient(135deg, var(--accent), var(--accent2))",
                 border: "none",
                 borderRadius: "var(--radius-sm)",
                 color: "#fff",
@@ -134,22 +121,10 @@ export default function SearchBar({ onSearch, query, setQuery, location, setLoca
             >
               {loading ? (
                 <>
-                  <span
-                    style={{
-                      width: "14px",
-                      height: "14px",
-                      border: "2px solid rgba(255,255,255,0.3)",
-                      borderTop: "2px solid white",
-                      borderRadius: "50%",
-                      animation: "spin 0.8s linear infinite",
-                      display: "inline-block",
-                    }}
-                  />
+                  <span style={{ width: "14px", height: "14px", border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block" }} />
                   Hunting...
                 </>
-              ) : (
-                "Hunt Prices"
-              )}
+              ) : "Hunt Prices"}
             </button>
           </div>
         </div>

@@ -44,12 +44,12 @@ export default function Header() {
           PriceHunt
         </h1>
         <p style={{ fontSize: "11px", color: "var(--text-dim)", marginTop: "-2px" }}>
-          Best prices from across the web & your city
+          UAE & MENA price comparison — prices in AED
         </p>
       </div>
 
-      <div style={{ marginLeft: "auto", display: "flex", gap: "8px" }}>
-        {["eBay", "Walmart", "Craigslist", "Instagram"].map((s) => (
+      <div style={{ marginLeft: "auto", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {["Amazon.ae", "Noon", "Carrefour", "Sharaf DG", "Dubizzle", "OpenSooq"].map((s) => (
           <span
             key={s}
             style={{

@@ -9,7 +9,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState("Dubai");
   const [activeSource, setActiveSource] = useState("all");
   const [sortBy, setSortBy] = useState("price_asc");
   const [results, setResults] = useState([]);
@@ -54,12 +54,14 @@ export default function App() {
   const filteredResults =
     activeSource === "all"
       ? sortedResults
-      : sortedResults.filter((r) => r.source.toLowerCase().includes(activeSource));
+      : sortedResults.filter((r) => {
+          const src = r.source.toLowerCase().replace(/[.\s]/g, "");
+          return src.includes(activeSource.replace(/[.\s]/g, ""));
+        });
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
-
       <main style={{ flex: 1, padding: "0 16px 60px" }}>
         <SearchBar
           onSearch={handleSearch}
@@ -73,23 +75,14 @@ export default function App() {
         {searched && (
           <>
             {bestPrice && <PriceSummary best={bestPrice} total={total} query={query} />}
-
             <FilterBar
               activeSource={activeSource}
-              setActiveSource={(src) => {
-                setActiveSource(src);
-              }}
+              setActiveSource={setActiveSource}
               sortBy={sortBy}
               setSortBy={setSortBy}
               resultCount={filteredResults.length}
             />
-
-            <ResultsGrid
-              results={filteredResults}
-              loading={loading}
-              error={error}
-              query={query}
-            />
+            <ResultsGrid results={filteredResults} loading={loading} error={error} query={query} />
           </>
         )}
 
@@ -104,16 +97,19 @@ function HeroHints() {
     { icon: "📱", label: "iPhone 15 Pro" },
     { icon: "👟", label: "Nike Air Max" },
     { icon: "💻", label: "MacBook Air M2" },
-    { icon: "🎮", label: "PS5 Controller" },
+    { icon: "🎮", label: "PS5" },
     { icon: "📷", label: "Canon EOS R50" },
     { icon: "🎧", label: "AirPods Pro" },
+    { icon: "🛋️", label: "IKEA Sofa" },
+    { icon: "🚗", label: "Toyota Camry" },
   ];
+
   return (
     <div style={{ textAlign: "center", marginTop: "60px", animation: "fadeIn 0.6s ease" }}>
       <p style={{ color: "var(--text-muted)", marginBottom: "24px", fontSize: "15px" }}>
         Try searching for...
       </p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "center", maxWidth: "520px", margin: "0 auto" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "center", maxWidth: "560px", margin: "0 auto" }}>
         {examples.map((e) => (
           <span
             key={e.label}
@@ -123,7 +119,6 @@ function HeroHints() {
               borderRadius: "999px",
               padding: "8px 18px",
               fontSize: "14px",
-              cursor: "default",
               color: "var(--text-muted)",
             }}
           >
@@ -134,11 +129,12 @@ function HeroHints() {
 
       <div style={{ display: "flex", gap: "32px", justifyContent: "center", marginTop: "60px", flexWrap: "wrap" }}>
         {[
-          { icon: "🛒", title: "eBay", desc: "Buy it now listings" },
-          { icon: "🏪", title: "Walmart", desc: "Retail store prices" },
-          { icon: "🔍", title: "Google Shopping", desc: "Compare across stores" },
-          { icon: "📍", title: "Craigslist", desc: "Local real-world prices" },
-          { icon: "📸", title: "Instagram", desc: "Social commerce posts" },
+          { icon: "🛒", title: "Amazon.ae", desc: "UAE Amazon store" },
+          { icon: "🌙", title: "Noon", desc: "MENA's biggest shop" },
+          { icon: "🏪", title: "Carrefour", desc: "Physical + online" },
+          { icon: "📱", title: "Sharaf DG", desc: "Electronics UAE" },
+          { icon: "📍", title: "Dubizzle", desc: "UAE classifieds" },
+          { icon: "🗺️", title: "OpenSooq", desc: "MENA classifieds" },
         ].map((s) => (
           <div key={s.title} style={{ textAlign: "center", width: "100px" }}>
             <div style={{ fontSize: "28px", marginBottom: "8px" }}>{s.icon}</div>
@@ -147,6 +143,10 @@ function HeroHints() {
           </div>
         ))}
       </div>
+
+      <p style={{ color: "var(--text-dim)", fontSize: "12px", marginTop: "40px" }}>
+        All prices shown in AED 🇦🇪
+      </p>
     </div>
   );
 }
