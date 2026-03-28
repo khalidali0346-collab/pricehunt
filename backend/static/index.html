@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PriceHunt UAE — Find Best Prices</title>
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --bg-card: #13132a;
+      --bg-card-hover: #1a1a35;
+      --border: rgba(139,92,246,0.2);
+      --border-hover: rgba(139,92,246,0.5);
+      --accent: #8b5cf6;
+      --accent2: #ec4899;
+      --text: #f0f0ff;
+      --text-muted: #888aaa;
+      --text-dim: #555770;
+      --success: #22c55e;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,13,26,0.9);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      flex-wrap: wrap;
+    }
+    .logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+      box-shadow: 0 0 16px rgba(139,92,246,0.4);
+    }
+    .logo-text h1 {
+      font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo-text p { font-size: 11px; color: var(--text-dim); }
+    .header-tags { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+    .header-tag {
+      font-size: 11px; color: var(--text-dim);
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 999px; padding: 3px 10px;
+    }
+
+    /* MAIN */
+    main { max-width: 1000px; margin: 0 auto; padding: 0 16px 80px; }
+
+    /* HERO */
+    .hero { text-align: center; margin: 40px 0 28px; }
+    .hero h2 {
+      font-size: clamp(22px, 5vw, 38px); font-weight: 800; letter-spacing: -1px;
+      background: linear-gradient(135deg, #c4b5fd, #f9a8d4, #93c5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p { color: var(--text-muted); margin-top: 8px; font-size: 15px; }
+
+    /* SEARCH BOX */
+    .search-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px;
+      display: flex; flex-direction: column; gap: 6px;
+      box-shadow: 0 0 40px rgba(139,92,246,0.08);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px rgba(139,92,246,0.25);
+    }
+    .search-row {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .search-row .icon { padding: 0 8px 0 12px; font-size: 18px; opacity: 0.6; flex-shrink: 0; }
+    .search-row input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 16px; padding: 10px 0;
+    }
+    .location-row {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .location-input-wrap {
+      flex: 1; display: flex; align-items: center;
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-sm); padding: 0 10px; gap: 8px;
+    }
+    .location-input-wrap input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 14px; padding: 8px 0;
+    }
+    .btn-search {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-weight: 700; font-size: 14px;
+      padding: 10px 24px; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(139,92,246,0.4);
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-search:active { transform: translateY(0); }
+    .btn-search:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.8s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* BEST PRICE BANNER */
+    #best-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.1));
+      border: 1px solid rgba(139,92,246,0.4);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 20px 0 0;
+      align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .best-price-amount {
+      font-size: 36px; font-weight: 800;
+      background: linear-gradient(90deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .best-source-badge {
+      font-size: 13px;
+      background: rgba(139,92,246,0.2);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 999px; padding: 2px 10px; color: #c4b5fd;
+    }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 700; }
+    .btn-view-deal {
+      display: inline-block;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: #fff; text-decoration: none; font-weight: 700;
+      font-size: 13px; padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 16px rgba(139,92,246,0.35);
+      transition: opacity 0.2s;
+    }
+    .btn-view-deal:hover { opacity: 0.85; }
+
+    /* FILTER BAR */
+    #filter-bar {
+      display: none;
+      align-items: center; gap: 10px; flex-wrap: wrap;
+      justify-content: space-between;
+      margin: 20px 0 0;
+    }
+    .source-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 13px; padding: 6px 14px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-color: transparent; color: #fff; font-weight: 700;
+      box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+    }
+    .filter-right { display: flex; align-items: center; gap: 12px; }
+    .result-count { font-size: 13px; color: var(--text-muted); }
+    select#sort-select {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      font-size: 13px; padding: 6px 10px; cursor: pointer; outline: none;
+    }
+
+    /* RESULTS GRID */
+    #results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      animation: fadeIn 0.4s ease both;
+      height: 100%;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 32px rgba(139,92,246,0.2);
+      background: var(--bg-card-hover);
+    }
+    .card.best {
+      border-color: rgba(139,92,246,0.6);
+      box-shadow: 0 0 24px rgba(139,92,246,0.2);
+    }
+    .card a {
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .best-badge {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: #fff; font-size: 10px; font-weight: 800;
+      padding: 3px 8px; border-radius: 999px; letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(139,92,246,0.5);
+    }
+    .card-img {
+      height: 160px; background: rgba(255,255,255,0.02);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .card-img img {
+      width: 100%; height: 100%; object-fit: contain; padding: 8px;
+    }
+    .card-img .no-img { font-size: 40px; opacity: 0.15; }
+    .card-body {
+      padding: 14px; flex: 1;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .source-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      border-radius: 999px; padding: 2px 10px;
+      font-size: 11px; font-weight: 600; width: fit-content;
+    }
+    .card-title {
+      font-size: 13px; line-height: 1.4; flex: 1;
+      display: -webkit-box; -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .card-price { font-size: 20px; font-weight: 800; color: var(--success); }
+    .card-price.no-price { color: var(--text-muted); font-size: 15px; }
+    .card-meta { display: flex; flex-direction: column; gap: 4px; }
+    .meta-line {
+      font-size: 11px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 5px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .card-cta {
+      font-size: 12px; font-weight: 600;
+      color: var(--accent); text-align: right; margin-top: 4px;
+    }
+
+    /* SOURCE COLORS */
+    .src-amazon   { background: rgba(255,153,0,0.15); border: 1px solid rgba(255,153,0,0.4); color: #fb923c; }
+    .src-noon     { background: rgba(255,210,0,0.15);  border: 1px solid rgba(255,210,0,0.4);  color: #fbbf24; }
+    .src-carrefour{ background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; }
+    .src-sharaf   { background: rgba(34,197,94,0.15);  border: 1px solid rgba(34,197,94,0.4);  color: #4ade80; }
+    .src-dubizzle { background: rgba(236,72,153,0.15); border: 1px solid rgba(236,72,153,0.4); color: #f472b6; }
+    .src-opensooq { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; }
+    .src-default  { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; }
+
+    /* SKELETON */
+    .skeleton-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      animation: pulse 1.5s ease infinite;
+    }
+    .skeleton-img { height: 160px; background: rgba(255,255,255,0.03); }
+    .skeleton-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .skeleton-line { background: rgba(255,255,255,0.05); border-radius: 4px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* EMPTY / ERROR */
+    .center-msg { text-align: center; padding: 60px 20px; }
+    .center-msg .big-icon { font-size: 48px; margin-bottom: 16px; }
+    .center-msg h3 { font-size: 18px; margin-bottom: 8px; }
+    .center-msg p { color: var(--text-muted); font-size: 14px; }
+
+    /* HINTS */
+    #hints { text-align: center; margin-top: 48px; }
+    #hints p { color: var(--text-muted); margin-bottom: 20px; }
+    .hint-tags { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 520px; margin: 0 auto; }
+    .hint-tag {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 18px;
+      font-size: 14px; color: var(--text-muted); cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .hint-tag:hover { border-color: var(--accent); color: var(--text); }
+    .source-icons { display: flex; gap: 28px; justify-content: center; margin-top: 50px; flex-wrap: wrap; }
+    .source-icon { text-align: center; width: 90px; }
+    .source-icon .si { font-size: 28px; margin-bottom: 8px; }
+    .source-icon strong { font-size: 13px; display: block; margin-bottom: 4px; }
+    .source-icon span { font-size: 11px; color: var(--text-muted); }
+    .aed-note { color: var(--text-dim); font-size: 12px; margin-top: 36px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">🔍</div>
+  <div class="logo-text">
+    <h1>PriceHunt</h1>
+    <p>UAE &amp; MENA price comparison — prices in AED</p>
+  </div>
+  <div class="header-tags">
+    <span class="header-tag">Amazon.ae</span>
+    <span class="header-tag">Noon</span>
+    <span class="header-tag">Carrefour</span>
+    <span class="header-tag">Sharaf DG</span>
+    <span class="header-tag">Dubizzle</span>
+    <span class="header-tag">OpenSooq</span>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="hero">
+    <h2>Find the Best Price in UAE &amp; MENA</h2>
+    <p>Search Amazon.ae, Noon, Carrefour, Sharaf DG, Dubizzle &amp; OpenSooq at once</p>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-box">
+    <div class="search-row">
+      <span class="icon">🔍</span>
+      <input type="text" id="query-input" placeholder="What are you looking for? e.g. iPhone 15 Pro, Nike Air Max..." autocomplete="off" />
+    </div>
+    <div class="location-row">
+      <div class="location-input-wrap">
+        <span>📍</span>
+        <input type="text" id="location-input" placeholder="City (Dubai, Abu Dhabi, Riyadh...)" list="city-list" value="Dubai" />
+        <datalist id="city-list">
+          <option value="Dubai" /><option value="Abu Dhabi" /><option value="Sharjah" />
+          <option value="Ajman" /><option value="Riyadh" /><option value="Jeddah" />
+          <option value="Kuwait" /><option value="Doha" /><option value="Muscat" />
+          <option value="Cairo" /><option value="Amman" /><option value="Beirut" />
+        </datalist>
+      </div>
+      <button class="btn-search" id="search-btn" onclick="doSearch()">
+        Hunt Prices
+      </button>
+    </div>
+  </div>
+
+  <!-- BEST PRICE BANNER -->
+  <div id="best-banner">
+    <div style="flex:1;min-width:160px">
+      <div class="stat-label">Best Price Found</div>
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <span class="best-price-amount" id="best-amount"></span>
+        <span class="best-source-badge" id="best-source"></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+      <div>
+        <div class="stat-label">Results Found</div>
+        <div class="stat-value" id="total-count">0</div>
+      </div>
+      <div>
+        <div class="stat-label">View Deal</div>
+        <a class="btn-view-deal" id="best-link" href="#" target="_blank" rel="noopener">Go to Listing →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div id="filter-bar">
+    <div class="source-filters" id="source-filters">
+      <button class="filter-btn active" data-source="all" onclick="filterSource(this)">⚡ All Sources</button>
+      <button class="filter-btn" data-source="amazon.ae" onclick="filterSource(this)">🛒 Amazon.ae</button>
+      <button class="filter-btn" data-source="noon" onclick="filterSource(this)">🌙 Noon</button>
+      <button class="filter-btn" data-source="carrefour" onclick="filterSource(this)">🏪 Carrefour</button>
+      <button class="filter-btn" data-source="sharaf" onclick="filterSource(this)">📱 Sharaf DG</button>
+      <button class="filter-btn" data-source="dubizzle" onclick="filterSource(this)">📍 Dubizzle</button>
+      <button class="filter-btn" data-source="opensooq" onclick="filterSource(this)">🗺️ OpenSooq</button>
+    </div>
+    <div class="filter-right">
+      <span class="result-count" id="result-count">0 results</span>
+      <select id="sort-select" onchange="applySort()">
+        <option value="price_asc">Price: Low → High</option>
+        <option value="price_desc">Price: High → Low</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-grid"></div>
+
+  <!-- HINTS (shown before first search) -->
+  <div id="hints">
+    <p>Try searching for...</p>
+    <div class="hint-tags">
+      <span class="hint-tag" onclick="useHint(this)">📱 iPhone 15 Pro</span>
+      <span class="hint-tag" onclick="useHint(this)">👟 Nike Air Max</span>
+      <span class="hint-tag" onclick="useHint(this)">💻 MacBook Air M2</span>
+      <span class="hint-tag" onclick="useHint(this)">🎮 PS5</span>
+      <span class="hint-tag" onclick="useHint(this)">📷 Canon EOS R50</span>
+      <span class="hint-tag" onclick="useHint(this)">🎧 AirPods Pro</span>
+      <span class="hint-tag" onclick="useHint(this)">🛋️ IKEA Sofa</span>
+      <span class="hint-tag" onclick="useHint(this)">🚗 Toyota Camry</span>
+    </div>
+    <div class="source-icons">
+      <div class="source-icon"><div class="si">🛒</div><strong>Amazon.ae</strong><span>UAE store</span></div>
+      <div class="source-icon"><div class="si">🌙</div><strong>Noon</strong><span>MENA's biggest</span></div>
+      <div class="source-icon"><div class="si">🏪</div><strong>Carrefour</strong><span>Physical + online</span></div>
+      <div class="source-icon"><div class="si">📱</div><strong>Sharaf DG</strong><span>Electronics UAE</span></div>
+      <div class="source-icon"><div class="si">📍</div><strong>Dubizzle</strong><span>UAE classifieds</span></div>
+      <div class="source-icon"><div class="si">🗺️</div><strong>OpenSooq</strong><span>MENA classifieds</span></div>
+    </div>
+    <p class="aed-note">All prices shown in AED 🇦🇪</p>
+  </div>
+</main>
+
+<script>
+  // ── STATE ──────────────────────────────────────────────────────────────────
+  let allResults = [];
+  let activeSource = 'all';
+  let activeSort = 'price_asc';
+
+  // ── SOURCE → CSS CLASS MAP ─────────────────────────────────────────────────
+  function sourceClass(source) {
+    const s = source.toLowerCase();
+    if (s.includes('amazon'))    return 'src-amazon';
+    if (s.includes('noon'))      return 'src-noon';
+    if (s.includes('carrefour')) return 'src-carrefour';
+    if (s.includes('sharaf'))    return 'src-sharaf';
+    if (s.includes('dubizzle'))  return 'src-dubizzle';
+    if (s.includes('opensooq'))  return 'src-opensooq';
+    return 'src-default';
+  }
+
+  function sourceIcon(type) {
+    if (type === 'local') return '📍';
+    if (type === 'instagram') return '📸';
+    return '🛒';
+  }
+
+  // ── SEARCH ─────────────────────────────────────────────────────────────────
+  async function doSearch() {
+    const query = document.getElementById('query-input').value.trim();
+    const location = document.getElementById('location-input').value.trim();
+    if (!query) { document.getElementById('query-input').focus(); return; }
+
+    setLoading(true);
+    document.getElementById('hints').style.display = 'none';
+
+    const params = new URLSearchParams({ query, sources: 'all' });
+    if (location) params.set('location', location);
+
+    try {
+      const res = await fetch('/api/search?' + params);
+      if (!res.ok) throw new Error('Server error ' + res.status);
+      const data = await res.json();
+      allResults = data.results || [];
+      renderBanner(data.best_price, data.total);
+      renderFilterBar();
+      renderGrid();
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── FILTER ─────────────────────────────────────────────────────────────────
+  function filterSource(btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeSource = btn.dataset.source;
+    renderGrid();
+  }
+
+  // ── SORT ───────────────────────────────────────────────────────────────────
+  function applySort() {
+    activeSort = document.getElementById('sort-select').value;
+    renderGrid();
+  }
+
+  // ── RENDER GRID ────────────────────────────────────────────────────────────
+  function renderGrid() {
+    // Filter
+    let items = allResults.filter(r => {
+      if (activeSource === 'all') return true;
+      return r.source.toLowerCase().includes(activeSource);
+    });
+
+    // Sort
+    items = items.sort((a, b) => {
+      const pa = a.price ?? (activeSort === 'price_asc' ? Infinity : -Infinity);
+      const pb = b.price ?? (activeSort === 'price_asc' ? Infinity : -Infinity);
+      return activeSort === 'price_asc' ? pa - pb : pb - pa;
+    });
+
+    // Best price in current filtered set
+    const lowestPrice = items.reduce((min, r) => {
+      return (r.price !== null && r.price !== undefined && (min === null || r.price < min)) ? r.price : min;
+    }, null);
+
+    document.getElementById('result-count').textContent = items.length + ' result' + (items.length !== 1 ? 's' : '');
+
+    const grid = document.getElementById('results-grid');
+    if (items.length === 0) {
+      grid.innerHTML = `<div class="center-msg" style="grid-column:1/-1">
+        <div class="big-icon">🔍</div>
+        <h3>No results found</h3>
+        <p>Try a different search term or select a different source filter.</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = items.map((item, i) => buildCard(item, i, lowestPrice)).join('');
+  }
+
+  // ── BUILD CARD ─────────────────────────────────────────────────────────────
+  function buildCard(item, index, lowestPrice) {
+    const isBest = item.price !== null && item.price === lowestPrice;
+    const hasImg = item.image && item.image.startsWith('http');
+    const icon = sourceIcon(item.source_type);
+    const cls = sourceClass(item.source);
+    const delay = Math.min(index * 0.04, 0.4);
+
+    const imgHtml = hasImg
+      ? `<img src="${escHtml(item.image)}" alt="${escHtml(item.title)}" onerror="this.parentNode.innerHTML='<span class=no-img>${icon}</span>'" />`
+      : `<span class="no-img">${icon}</span>`;
+
+    const priceHtml = item.price !== null
+      ? `<div class="card-price">${escHtml(item.price_text)}</div>`
+      : `<div class="card-price no-price">${escHtml(item.price_text || 'Price on request')}</div>`;
+
+    const metaLines = [
+      item.condition ? `<div class="meta-line"><span>✅</span><span>${escHtml(item.condition)}</span></div>` : '',
+      item.location  ? `<div class="meta-line"><span>📍</span><span>${escHtml(item.location)}</span></div>` : '',
+      item.shipping  ? `<div class="meta-line"><span>🚚</span><span>${escHtml(item.shipping)}</span></div>` : '',
+      item.rating    ? `<div class="meta-line"><span>⭐</span><span>${escHtml(item.rating)}</span></div>` : '',
+    ].join('');
+
+    return `
+    <div class="card${isBest ? ' best' : ''}" style="animation-delay:${delay}s">
+      ${isBest ? '<div class="best-badge">BEST PRICE</div>' : ''}
+      <a href="${escHtml(item.url)}" target="_blank" rel="noopener noreferrer">
+        <div class="card-img">${imgHtml}</div>
+        <div class="card-body">
+          <div class="source-badge ${cls}">${icon} ${escHtml(item.source)}</div>
+          <div class="card-title">${escHtml(item.title)}</div>
+          ${priceHtml}
+          <div class="card-meta">${metaLines}</div>
+          <div class="card-cta">View listing →</div>
+        </div>
+      </a>
+    </div>`;
+  }
+
+  // ── BANNER ─────────────────────────────────────────────────────────────────
+  function renderBanner(best, total) {
+    const banner = document.getElementById('best-banner');
+    if (!best) { banner.style.display = 'none'; return; }
+    document.getElementById('best-amount').textContent = best.price_text;
+    document.getElementById('best-source').textContent = best.source;
+    document.getElementById('total-count').textContent = total;
+    document.getElementById('best-link').href = best.url;
+    banner.style.display = 'flex';
+  }
+
+  function renderFilterBar() {
+    document.getElementById('filter-bar').style.display = 'flex';
+  }
+
+  // ── LOADING STATE ──────────────────────────────────────────────────────────
+  function setLoading(on) {
+    const btn = document.getElementById('search-btn');
+    const grid = document.getElementById('results-grid');
+    if (on) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Hunting...';
+      grid.innerHTML = Array.from({length: 8}).map((_, i) => `
+        <div class="skeleton-card" style="animation-delay:${i*0.05}s">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line" style="height:12px;width:50%"></div>
+            <div class="skeleton-line" style="height:11px"></div>
+            <div class="skeleton-line" style="height:11px;width:75%"></div>
+            <div class="skeleton-line" style="height:22px;width:40%"></div>
+          </div>
+        </div>`).join('');
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = 'Hunt Prices';
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('results-grid').innerHTML = `
+      <div class="center-msg" style="grid-column:1/-1">
+        <div class="big-icon">⚠️</div>
+        <h3>Something went wrong</h3>
+        <p>${escHtml(msg)}</p>
+        <p style="margin-top:8px;color:var(--text-dim);font-size:12px">Make sure the backend server is running on port 8000.</p>
+      </div>`;
+  }
+
+  // ── HINT CLICK ─────────────────────────────────────────────────────────────
+  function useHint(el) {
+    // Strip the emoji from the hint tag text
+    const text = el.textContent.replace(/^\S+\s/, '').trim();
+    document.getElementById('query-input').value = text;
+    doSearch();
+  }
+
+  // ── UTILS ──────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── ENTER KEY ──────────────────────────────────────────────────────────────
+  document.getElementById('query-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+  document.getElementById('location-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+</script>
+</body>
+</html>

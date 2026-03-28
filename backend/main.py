@@ -104,14 +104,14 @@ async def health():
     return {"status": "ok", "region": "UAE/MENA"}
 
 
-# Serve React build if it exists
-FRONTEND_BUILD = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
-if os.path.isdir(FRONTEND_BUILD):
-    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_BUILD, "assets")), name="assets")
+# Serve the single-file frontend
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+FRONTEND_INDEX = os.path.join(STATIC_DIR, "index.html")
 
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        return FileResponse(os.path.join(FRONTEND_BUILD, "index.html"))
+
+@app.get("/")
+async def serve_index():
+    return FileResponse(FRONTEND_INDEX)
 
 
 if __name__ == "__main__":
