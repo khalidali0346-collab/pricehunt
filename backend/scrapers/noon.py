@@ -6,12 +6,110 @@ from urllib.parse import quote_plus
 from .utils import get_headers, parse_price
 
 
+def _extract_hits_from_next_data(data: dict) -> list:
+    """Try multiple known data paths in Noon's Next.js JSON."""
+    page_props = data.get("props", {}).get("pageProps", {})
+
+    # Path variants observed across Noon's Next.js versions
+    candidates = [
+        # v1 – catalog.hits
+        page_props.get("catalog", {}).get("hits", []),
+        # v2 – searchResults.hits
+        page_props.get("searchResults", {}).get("hits", []),
+        # v3 – initialState.catalog.hits
+        page_props.get("initialState", {}).get("catalog", {}).get("hits", []),
+        # v4 – items directly
+        page_props.get("items", []),
+        # v5 – products list
+        page_props.get("products", []),
+        # v6 – data.products
+        page_props.get("data", {}).get("products", []),
+        # v7 – nested catalog under initialData
+        page_props.get("initialData", {}).get("catalog", {}).get("hits", []),
+    ]
+    for c in candidates:
+        if c:
+            return c
+    return []
+
+
+def _hit_to_result(hit: dict) -> dict | None:
+    title = hit.get("name", "") or hit.get("title", "")
+    brand = hit.get("brand", "") or hit.get("brand_name", "")
+    if brand and not title.lower().startswith(brand.lower()):
+        title = f"{brand} {title}".strip()
+
+    price = (
+        hit.get("sale_price")
+        or hit.get("price")
+        or hit.get("current_price")
+        or hit.get("offer_price")
+    )
+    if not title or price is None:
+        return None
+
+    sku = hit.get("sku", "") or hit.get("id", "") or hit.get("objectID", "")
+
+    img_keys = hit.get("image_keys") or hit.get("images") or []
+    img_key = img_keys[0] if img_keys else hit.get("thumbnail", "") or hit.get("image", "")
+    img_url = (
+        f"https://f.nooncdn.com/p/{img_key}?format=avif"
+        if img_key and not img_key.startswith("http")
+        else img_key or None
+    )
+
+    return {
+        "title": title,
+        "price": float(price),
+        "price_text": f"AED {float(price):,.2f}",
+        "source": "Noon",
+        "source_type": "web",
+        "url": f"https://www.noon.com/uae-en/{sku}/",
+        "image": img_url,
+        "location": "UAE",
+        "shipping": "Noon Express",
+        "condition": "New",
+        "currency": "AED",
+    }
+
+
 async def scrape(query: str) -> list[dict]:
-    # Noon has a search API endpoint
-    url = f"https://www.noon.com/uae-en/search/?q={quote_plus(query)}&sortBy=price_asc"
     headers = get_headers("https://www.noon.com")
     headers["Accept-Language"] = "en-AE,en;q=0.9"
 
+    results: list[dict] = []
+
+    # ── 1. Try Noon's internal REST API ──────────────────────────────
+    api_endpoints = [
+        f"https://www.noon.com/uae-en/api/catalog/search?q={quote_plus(query)}&lang=en&countryCode=ae&sortBy=price_asc",
+        f"https://www.noon.com/_svc/catalog/api/search/search?q={quote_plus(query)}&lang=en&country=ae&sort[]=price_asc&page=1&limit=40",
+    ]
+    for api_url in api_endpoints:
+        try:
+            api_headers = {**headers, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"}
+            async with httpx.AsyncClient(follow_redirects=True, timeout=20) as client:
+                r = await client.get(api_url, headers=api_headers)
+                if r.status_code == 200:
+                    data = r.json()
+                    hits = (
+                        data.get("hits")
+                        or data.get("products")
+                        or data.get("items")
+                        or data.get("data", {}).get("hits")
+                        or data.get("data", {}).get("products")
+                        or []
+                    )
+                    for hit in hits[:20]:
+                        r2 = _hit_to_result(hit)
+                        if r2:
+                            results.append(r2)
+                    if results:
+                        return results
+        except Exception:
+            pass
+
+    # ── 2. Scrape the search page and read __NEXT_DATA__ ─────────────
+    url = f"https://www.noon.com/uae-en/search/?q={quote_plus(query)}&sortBy=price_asc"
     try:
         async with httpx.AsyncClient(follow_redirects=True, timeout=25) as client:
             r = await client.get(url, headers=headers)
@@ -20,51 +118,28 @@ async def scrape(query: str) -> list[dict]:
         return []
 
     soup = BeautifulSoup(r.text, "lxml")
-    results = []
 
-    # Try to extract from embedded JSON (Next.js __NEXT_DATA__)
     script = soup.select_one("script#__NEXT_DATA__")
     if script:
         try:
             data = json.loads(script.string)
-            hits = (
-                data.get("props", {})
-                .get("pageProps", {})
-                .get("catalog", {})
-                .get("hits", [])
-            )
+            hits = _extract_hits_from_next_data(data)
             for hit in hits[:20]:
-                title = hit.get("name", "")
-                price = hit.get("sale_price") or hit.get("price")
-                sku = hit.get("sku", "")
-                img = hit.get("image_keys", [""])[0]
-                img_url = f"https://f.nooncdn.com/p/{img}?format=avif" if img else None
-                brand = hit.get("brand", "")
-
-                if not title or not price:
-                    continue
-
-                results.append({
-                    "title": f"{brand} {title}".strip() if brand else title,
-                    "price": float(price),
-                    "price_text": f"AED {float(price):,.2f}",
-                    "source": "Noon",
-                    "source_type": "web",
-                    "url": f"https://www.noon.com/uae-en/{sku}/",
-                    "image": img_url,
-                    "location": "UAE",
-                    "shipping": "Noon Express",
-                    "condition": "New",
-                    "currency": "AED",
-                })
+                item = _hit_to_result(hit)
+                if item:
+                    results.append(item)
             if results:
                 return results
         except (json.JSONDecodeError, KeyError, TypeError):
             pass
 
-    # HTML fallback
-    for item in soup.select("div[class*='productContainer']")[:20]:
-        title_el = item.select_one("[class*='name']") or item.select_one("h3")
+    # ── 3. HTML fallback ─────────────────────────────────────────────
+    for item in soup.select(
+        "div[class*='productContainer'], "
+        "div[class*='product-card'], "
+        "div[data-qa='product-block']"
+    )[:20]:
+        title_el = item.select_one("[class*='name']") or item.select_one("h3") or item.select_one("h2")
         price_el = item.select_one("[class*='price']") or item.select_one("strong")
         link_el = item.select_one("a")
         img_el = item.select_one("img")

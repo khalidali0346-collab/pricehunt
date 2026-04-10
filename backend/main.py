@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 
 from scrapers import (
     dubizzle, amazon_ae, noon, carrefour_ae, sharaf_dg, opensooq,
-    lulu, virgin, jumbo, namshi, instagram_uae, desertcart,
+    lulu, virgin, jumbo, namshi, aliexpress, desertcart,
 )
 
 app = FastAPI(title="PriceHunt UAE/MENA API", version="3.0.0")
@@ -27,7 +27,7 @@ SCRAPERS = {
     "desertcart":  (desertcart.scrape,   False),
     "dubizzle":    (dubizzle.scrape,     True),
     "opensooq":    (opensooq.scrape,     True),
-    "instagram":   (instagram_uae.scrape,False),
+    "aliexpress":  (aliexpress.scrape,   False),
 }
 
 ALL_SOURCES = list(SCRAPERS.keys())
@@ -93,7 +93,7 @@ async def list_sources():
         {"id": "desertcart", "name": "Desertcart",       "type": "web",       "icon": "🌐"},
         {"id": "dubizzle",   "name": "Dubizzle",         "type": "local",     "icon": "📍"},
         {"id": "opensooq",   "name": "OpenSooq",         "type": "local",     "icon": "🗺️"},
-        {"id": "instagram",  "name": "Instagram",        "type": "instagram", "icon": "📸"},
+        {"id": "aliexpress", "name": "AliExpress",        "type": "web",       "icon": "🌏"},
     ]}
 
 

@@ -153,7 +153,7 @@ main{max-width:1040px;margin:0 auto;padding:0 14px 80px}
 .s-desertcart{background:rgba(20,184,166,.14);border:1px solid rgba(20,184,166,.4);color:#2dd4bf}
 .s-dubizzle {background:rgba(236,72,153,.14);border:1px solid rgba(236,72,153,.4);color:#f472b6}
 .s-opensooq {background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4);color:#a78bfa}
-.s-instagram{background:rgba(253,58,110,.14);border:1px solid rgba(253,58,110,.4);color:#fb7185}
+.s-aliexpress{background:rgba(255,106,0,.14);border:1px solid rgba(255,106,0,.4);color:#fb923c}
 .s-default  {background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4);color:#a78bfa}
 
 /* SKELETON */
@@ -211,14 +211,14 @@ main{max-width:1040px;margin:0 auto;padding:0 14px 80px}
     <span class="h-tag">Jumbo</span>
     <span class="h-tag">Dubizzle</span>
     <span class="h-tag">OpenSooq</span>
-    <span class="h-tag">Instagram</span>
+    <span class="h-tag">AliExpress</span>
   </div>
 </header>
 
 <main>
   <div class="hero">
     <h2>Find the Best Price in UAE &amp; MENA</h2>
-    <p>We search 12 sources simultaneously — online stores, physical stores, classifieds &amp; Instagram</p>
+    <p>We search 12 sources simultaneously — online stores, physical stores, classifieds &amp; AliExpress</p>
   </div>
 
   <!-- SEARCH BOX -->
@@ -276,7 +276,7 @@ main{max-width:1040px;margin:0 auto;padding:0 14px 80px}
       <button class="f-btn" data-src="desertcart">🌐 Desertcart</button>
       <button class="f-btn" data-src="dubizzle">📍 Dubizzle</button>
       <button class="f-btn" data-src="opensooq">🗺️ OpenSooq</button>
-      <button class="f-btn" data-src="instagram">📸 Instagram</button>
+      <button class="f-btn" data-src="aliexpress">🌏 AliExpress</button>
     </div>
     <div class="f-right">
       <span class="f-count" id="fCount">0 results</span>
@@ -318,7 +318,7 @@ main{max-width:1040px;margin:0 auto;padding:0 14px 80px}
       <div class="src-item"><div class="si">🌐</div><strong>Desertcart</strong><span>Global → UAE</span></div>
       <div class="src-item"><div class="si">📍</div><strong>Dubizzle</strong><span>Classifieds</span></div>
       <div class="src-item"><div class="si">🗺️</div><strong>OpenSooq</strong><span>MENA listings</span></div>
-      <div class="src-item"><div class="si">📸</div><strong>Instagram</strong><span>Social sellers</span></div>
+      <div class="src-item"><div class="si">🌏</div><strong>AliExpress</strong><span>Ships to UAE</span></div>
     </div>
     <p class="aed-note">All prices shown in AED 🇦🇪 — Covers online stores, physical stores &amp; classifieds</p>
   </div>
@@ -344,13 +344,13 @@ function srcCls(source) {
   if (s.includes('desertcart')) return 's-desertcart';
   if (s.includes('dubizzle'))   return 's-dubizzle';
   if (s.includes('opensooq'))   return 's-opensooq';
-  if (s.includes('instagram'))  return 's-instagram';
+  if (s.includes('aliexpress')) return 's-aliexpress';
   return 's-default';
 }
 
 function srcIcon(type) {
   if (type === 'local') return '📍';
-  if (type === 'instagram') return '📸';
+  if (type === 'aliexpress') return '🌏';
   return '🛒';
 }
 
@@ -520,7 +520,7 @@ function renderSourceStats(stats) {
   var LABELS = {
     amazon:'Amazon.ae', noon:'Noon', carrefour:'Carrefour', sharafdg:'Sharaf DG',
     lulu:'Lulu', virgin:'Virgin', jumbo:'Jumbo', namshi:'Namshi',
-    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', instagram:'Instagram'
+    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', aliexpress:'AliExpress'
   };
 
   var html = '';
