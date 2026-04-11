@@ -19,6 +19,9 @@ source .venv/bin/activate
 echo "  Installing backend dependencies..."
 pip install -q -r requirements.txt
 
+echo "  Installing Playwright browser (first run may take a minute)..."
+playwright install chromium --with-deps 2>/dev/null || playwright install chromium 2>/dev/null || true
+
 echo "  Backend running on http://localhost:8000"
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
