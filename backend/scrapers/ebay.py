@@ -45,18 +45,21 @@ async def scrape(query: str) -> list[dict]:
         if price is None:
             continue
 
+        # Convert USD → AED (fixed peg: 1 USD = 3.67 AED)
+        aed = round(price * 3.67, 2)
         results.append(
             {
                 "title": title,
-                "price": price,
-                "price_text": f"${price:,.2f}",
+                "price": aed,
+                "price_text": f"AED {aed:,.2f}",
                 "source": "eBay",
                 "source_type": "web",
                 "url": link_el.get("href", ""),
                 "image": img_el.get("src", "") if img_el else None,
-                "location": location_el.get_text(strip=True).replace("from ", "") if location_el else None,
-                "shipping": shipping_el.get_text(strip=True) if shipping_el else None,
-                "condition": condition_el.get_text(strip=True) if condition_el else None,
+                "location": location_el.get_text(strip=True).replace("from ", "") if location_el else "Global",
+                "shipping": shipping_el.get_text(strip=True) if shipping_el else "Ships to UAE",
+                "condition": condition_el.get_text(strip=True) if condition_el else "New",
+                "currency": "AED",
             }
         )
 
