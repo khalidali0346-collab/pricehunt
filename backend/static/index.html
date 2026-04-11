@@ -3,425 +3,636 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>PriceHunt UAE — Best Prices Everywhere</title>
+<title>PriceHunt — Find Best Prices in UAE</title>
 <style>
-:root{
-  --bg:#0d0d1a; --card:#13132a; --card-h:#1a1a35;
-  --border:rgba(139,92,246,.2); --border-h:rgba(139,92,246,.5);
-  --purple:#8b5cf6; --pink:#ec4899;
-  --text:#f0f0ff; --muted:#888aaa; --dim:#555770;
-  --green:#22c55e; --r:14px; --rs:8px;
+:root {
+  --purple: #7C3AED;
+  --purple-dark: #4C1D95;
+  --white: #FFFFFF;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --green: #10B981;
+  --red: #EF4444;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;min-height:100vh}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:3px}
 
-/* HEADER */
-header{display:flex;align-items:center;gap:12px;padding:14px 20px;
-  border-bottom:1px solid var(--border);background:rgba(13,13,26,.92);
-  position:sticky;top:0;z-index:200;backdrop-filter:blur(14px);flex-wrap:wrap}
-.logo-box{width:36px;height:36px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  box-shadow:0 0 18px rgba(139,92,246,.4)}
-.logo-name{font-size:20px;font-weight:800;letter-spacing:-.5px;
-  background:linear-gradient(90deg,#a78bfa,#f472b6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-sub{font-size:11px;color:var(--dim)}
-.h-tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-.h-tag{font-size:11px;color:var(--dim);background:var(--card);
-  border:1px solid var(--border);border-radius:999px;padding:3px 9px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  background: var(--white);
+  color: var(--gray-900);
+  line-height: 1.5;
+}
 
-/* MAIN */
-main{max-width:1040px;margin:0 auto;padding:0 14px 80px}
+/* ──────── HEADER ──────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 12px 20px;
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--purple), #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+.logo:hover { opacity: 0.8; }
 
-/* HERO */
-.hero{text-align:center;margin:38px 0 24px}
-.hero h2{font-size:clamp(22px,5vw,38px);font-weight:800;letter-spacing:-1px;
-  background:linear-gradient(135deg,#c4b5fd,#f9a8d4,#93c5fd);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+/* ──────── HERO ──────── */
+.hero {
+  background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 50%, #6D28D9 100%);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+.hero-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hero h1 {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+.hero .highlight { color: #FCD34D; }
+.hero p {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+.search-box {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  padding: 8px;
+  max-width: 600px;
+  margin: 0 auto 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 16px;
+  font-size: 16px;
+  outline: none;
+  color: var(--gray-900);
+}
+.search-box input::placeholder {
+  color: var(--gray-400);
+}
+.search-btn {
+  background: linear-gradient(135deg, var(--purple), #EC4899);
+  border: none;
+  color: white;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.search-btn:hover { opacity: 0.9; }
+.search-btn:active { transform: scale(0.98); }
+.trust-badges {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.85;
+  flex-wrap: wrap;
+}
 
-/* SEARCH */
-.search-wrap{background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:6px;
-  box-shadow:0 0 40px rgba(139,92,246,.07);transition:border-color .2s,box-shadow .2s}
-.search-wrap:focus-within{border-color:var(--purple);box-shadow:0 0 40px rgba(139,92,246,.22)}
-.srow{display:flex;align-items:center;gap:6px}
-.sicon{padding:0 8px 0 12px;font-size:18px;opacity:.55;flex-shrink:0}
-.sinput{flex:1;background:transparent;border:none;outline:none;
-  color:var(--text);font-size:16px;padding:10px 0}
-.loc-wrap{flex:1;display:flex;align-items:center;
-  background:rgba(255,255,255,.03);border-radius:var(--rs);padding:0 10px;gap:8px}
-.loc-wrap input{flex:1;background:transparent;border:none;outline:none;
-  color:var(--text);font-size:14px;padding:8px 0}
-.btn-hunt{background:linear-gradient(135deg,var(--purple),var(--pink));
-  border:none;border-radius:var(--rs);color:#fff;font-weight:700;
-  font-size:14px;padding:10px 26px;cursor:pointer;white-space:nowrap;
-  display:inline-flex;align-items:center;gap:8px;
-  box-shadow:0 4px 16px rgba(139,92,246,.4);
-  transition:opacity .2s,transform .1s}
-.btn-hunt:hover{opacity:.88;transform:translateY(-1px)}
-.btn-hunt:active{transform:translateY(0)}
-.btn-hunt:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
-.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
-  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ──────── MAIN ──────── */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
 
-/* BANNER */
-#banner{display:none;background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(236,72,153,.09));
-  border:1px solid rgba(139,92,246,.38);border-radius:var(--r);padding:18px 22px;
-  margin-top:20px;align-items:center;gap:20px;flex-wrap:wrap}
-.b-amount{font-size:34px;font-weight:800;
-  background:linear-gradient(90deg,#a78bfa,#f472b6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.b-src{font-size:13px;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.3);
-  border-radius:999px;padding:2px 10px;color:#c4b5fd}
-.b-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
-.b-stat-val{font-size:19px;font-weight:700}
-.b-btn{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--pink));
-  color:#fff;text-decoration:none;font-weight:700;font-size:13px;
-  padding:8px 18px;border-radius:var(--rs);
-  box-shadow:0 4px 14px rgba(139,92,246,.35);transition:opacity .2s}
-.b-btn:hover{opacity:.84}
+/* ──────── CATEGORIES ──────── */
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 48px;
+}
+.cat-btn {
+  background: var(--gray-50);
+  border: 2px solid transparent;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.cat-btn:hover {
+  border-color: var(--purple);
+  background: rgba(124, 58, 237, 0.05);
+}
+.cat-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
 
-/* SOURCE STATS PILLS */
-#src-stats{display:none;margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.ss-pill{font-size:11px;border-radius:999px;padding:3px 10px;
-  border:1px solid var(--border);color:var(--muted);background:var(--card)}
-.ss-pill.has-results{border-color:rgba(34,197,94,.35);color:#4ade80;background:rgba(34,197,94,.07)}
-.ss-pill.no-results{border-color:rgba(239,68,68,.3);color:#f87171;background:rgba(239,68,68,.07)}
+/* ──────── TRENDING ──────── */
+.trending {
+  margin-bottom: 48px;
+}
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.trending-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.trending-card:hover {
+  border-color: var(--purple);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  transform: translateY(-2px);
+}
+.trending-save {
+  display: inline-block;
+  background: var(--green);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.trending-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--gray-900);
+}
+.trending-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--purple);
+}
+.trending-stores {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
 
-/* FILTER BAR */
-#filterbar{display:none;margin-top:18px;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
-.f-sources{display:flex;gap:7px;flex-wrap:wrap}
-.f-btn{background:var(--card);border:1px solid var(--border);border-radius:999px;
-  color:var(--muted);font-size:13px;padding:6px 14px;cursor:pointer;
-  display:inline-flex;align-items:center;gap:5px;
-  transition:all .18s;white-space:nowrap;font-family:inherit}
-.f-btn:hover{border-color:var(--purple);color:var(--text)}
-.f-btn.active{background:linear-gradient(135deg,var(--purple),var(--pink));
-  border-color:transparent;color:#fff;font-weight:700;
-  box-shadow:0 4px 12px rgba(139,92,246,.35)}
-.f-right{display:flex;align-items:center;gap:10px}
-.f-count{font-size:13px;color:var(--muted)}
-#sort-sel{background:var(--card);border:1px solid var(--border);
-  border-radius:var(--rs);color:var(--text);font-size:13px;
-  padding:6px 10px;cursor:pointer;outline:none;font-family:inherit}
+/* ──────── RESULTS ──────── */
+#results { display: none; }
+#results.show { display: block; }
 
-/* GRID */
-#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:15px;margin-top:18px}
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.best-price-box {
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  flex: 1;
+  min-width: 250px;
+}
+.best-price-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+.best-price-amount {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.best-price-source {
+  font-size: 14px;
+  opacity: 0.9;
+}
 
-/* CARD */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  overflow:hidden;display:flex;flex-direction:column;position:relative;
-  transition:transform .2s,border-color .2s,box-shadow .2s,background .2s;
-  animation:fadeUp .38s ease both}
-.card:hover{transform:translateY(-4px);border-color:var(--border-h);
-  box-shadow:0 8px 30px rgba(139,92,246,.19);background:var(--card-h)}
-.card.best{border-color:rgba(139,92,246,.6);box-shadow:0 0 22px rgba(139,92,246,.18)}
-.card-link{text-decoration:none;color:inherit;display:flex;flex-direction:column;height:100%}
-.best-badge{position:absolute;top:9px;right:9px;z-index:2;
-  background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;
-  font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;
-  letter-spacing:.5px;box-shadow:0 2px 8px rgba(139,92,246,.5)}
-.c-img{height:155px;background:rgba(255,255,255,.02);overflow:hidden;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center}
-.c-img img{width:100%;height:100%;object-fit:contain;padding:8px}
-.c-img .no-img{font-size:38px;opacity:.13}
-.c-body{padding:13px;flex:1;display:flex;flex-direction:column;gap:7px}
-.src-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;
-  padding:2px 9px;font-size:11px;font-weight:600;width:fit-content}
-.c-title{font-size:13px;line-height:1.4;flex:1;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.c-price{font-size:20px;font-weight:800;color:var(--green)}
-.c-price.noprice{color:var(--muted);font-size:14px}
-.c-meta{display:flex;flex-direction:column;gap:3px}
-.mline{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.c-cta{font-size:12px;font-weight:600;color:var(--purple);text-align:right;margin-top:3px}
+.result-count {
+  font-size: 14px;
+  color: var(--gray-500);
+}
 
-/* source badge colors */
-.s-amazon   {background:rgba(255,153,0,.14);border:1px solid rgba(255,153,0,.4);color:#fb923c}
-.s-noon     {background:rgba(255,210,0,.14); border:1px solid rgba(255,210,0,.4); color:#fbbf24}
-.s-carrefour{background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.4);color:#60a5fa}
-.s-sharaf   {background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.4); color:#4ade80}
-.s-lulu     {background:rgba(249,115,22,.14);border:1px solid rgba(249,115,22,.4);color:#fb923c}
-.s-virgin   {background:rgba(239,68,68,.14); border:1px solid rgba(239,68,68,.4); color:#f87171}
-.s-jumbo    {background:rgba(6,182,212,.14);  border:1px solid rgba(6,182,212,.4); color:#22d3ee}
-.s-namshi   {background:rgba(168,85,247,.14);border:1px solid rgba(168,85,247,.4);color:#c084fc}
-.s-desertcart{background:rgba(20,184,166,.14);border:1px solid rgba(20,184,166,.4);color:#2dd4bf}
-.s-dubizzle {background:rgba(236,72,153,.14);border:1px solid rgba(236,72,153,.4);color:#f472b6}
-.s-opensooq {background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4);color:#a78bfa}
-.s-aliexpress{background:rgba(255,106,0,.14);border:1px solid rgba(255,106,0,.4);color:#fb923c}
-.s-default  {background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4);color:#a78bfa}
+/* ──────── SOURCE STATS ──────── */
+.source-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.stat-pill {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.stat-pill.has { border-color: var(--green); background: rgba(16, 185, 129, 0.05); color: var(--green); }
+.stat-pill.no { border-color: var(--red); background: rgba(239, 68, 68, 0.05); color: var(--red); }
 
-/* SKELETON */
-.skel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  overflow:hidden;animation:pulse 1.4s ease infinite}
-.skel-img{height:155px;background:rgba(255,255,255,.03)}
-.skel-body{padding:13px;display:flex;flex-direction:column;gap:9px}
-.skel-line{background:rgba(255,255,255,.05);border-radius:4px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.38}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+/* ──────── FILTER & SORT ──────── */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  background: var(--white);
+  border: 1px solid var(--gray-300);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.filter-btn:hover { border-color: var(--purple); }
+.filter-btn.active {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
+.sort-sel {
+  border: 1px solid var(--gray-300);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
 
-/* STATES */
-.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px}
-.empty-state .icon{font-size:46px;margin-bottom:14px}
-.empty-state h3{font-size:18px;margin-bottom:8px}
-.empty-state p{color:var(--muted);font-size:14px}
+/* ──────── RESULTS GRID ──────── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
 
-/* HINTS */
-#hints{text-align:center;margin-top:50px}
-#hints>p{color:var(--muted);margin-bottom:18px}
-.hint-tags{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:540px;margin:0 auto}
-.hint-tag{background:var(--card);border:1px solid var(--border);border-radius:999px;
-  padding:8px 17px;font-size:14px;color:var(--muted);cursor:pointer;
-  transition:border-color .2s,color .2s}
-.hint-tag:hover{border-color:var(--purple);color:var(--text)}
-.src-showcase{display:flex;gap:26px;justify-content:center;margin-top:46px;flex-wrap:wrap}
-.src-item{text-align:center;width:80px}
-.src-item .si{font-size:26px;margin-bottom:7px}
-.src-item strong{font-size:12px;display:block;margin-bottom:3px}
-.src-item span{font-size:11px;color:var(--muted)}
-.aed-note{color:var(--dim);font-size:12px;margin-top:34px}
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+.card:hover {
+  border-color: var(--purple);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.12);
+  transform: translateY(-4px);
+}
+.card.best {
+  border: 2px solid var(--purple);
+}
+.card.best .best-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--purple);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
 
-@media(max-width:600px){
-  .h-tags{display:none}
-  .b-amount{font-size:26px}
-  #banner{flex-direction:column;align-items:flex-start}
+.card-img {
+  width: 100%;
+  height: 160px;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-img .no-img {
+  font-size: 48px;
+}
+
+.card-body {
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.src-badge {
+  display: inline-block;
+  background: var(--gray-100);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  flex-grow: 1;
+}
+.card-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 8px;
+}
+.card-meta {
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.mline { display: flex; gap: 4px; margin-bottom: 4px; }
+
+/* ──────── EMPTY STATE ──────── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-500);
+}
+.empty-state .icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--gray-900);
+}
+
+/* ──────── LOADING ──────── */
+.spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.skel {
+  background: var(--gray-100);
+  border-radius: 8px;
+  padding: 12px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.skel-img { height: 160px; background: var(--gray-200); border-radius: 4px; margin-bottom: 12px; }
+.skel-body { display: flex; flex-direction: column; gap: 8px; }
+.skel-line { height: 12px; background: var(--gray-200); border-radius: 2px; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* ──────── RESPONSIVE ──────── */
+@media (max-width: 768px) {
+  main { padding: 24px 16px; }
+  .search-box { flex-direction: column; }
+  .search-box input { padding: 12px; }
+  .search-btn { width: 100%; }
+  #grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo-box">🔍</div>
-  <div>
-    <div class="logo-name">PriceHunt</div>
-    <div class="logo-sub">UAE &amp; MENA • Prices in AED 🇦🇪</div>
-  </div>
-  <div class="h-tags">
-    <span class="h-tag">Amazon.ae</span>
-    <span class="h-tag">Noon</span>
-    <span class="h-tag">Carrefour</span>
-    <span class="h-tag">Sharaf DG</span>
-    <span class="h-tag">Lulu</span>
-    <span class="h-tag">Virgin</span>
-    <span class="h-tag">Jumbo</span>
-    <span class="h-tag">Dubizzle</span>
-    <span class="h-tag">OpenSooq</span>
-    <span class="h-tag">AliExpress</span>
+  <div class="header-inner">
+    <a class="logo" href="/">⚡ PriceHunt</a>
+    <div style="font-size:12px;color:var(--gray-500)">UAE's Best Prices</div>
   </div>
 </header>
 
-<main>
-  <div class="hero">
-    <h2>Find the Best Price in UAE &amp; MENA</h2>
-    <p>We search 12 sources simultaneously — online stores, physical stores, classifieds &amp; AliExpress</p>
-  </div>
-
-  <!-- SEARCH BOX -->
-  <div class="search-wrap">
-    <div class="srow">
-      <span class="sicon">🔍</span>
-      <input class="sinput" id="q" type="text" placeholder="What are you looking for? e.g. iPhone 15 Pro, Nike Air Max, PS5..." autocomplete="off"/>
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Find the Best Price in <span class="highlight">UAE & MENA</span></h1>
+    <p>Search 12 sources simultaneously — online stores, physical stores, classifieds & AliExpress</p>
+    <div class="search-box">
+      <input type="text" id="q" placeholder="Search any product..." />
+      <button class="search-btn" id="huntBtn">Hunt Prices</button>
     </div>
-    <div class="srow" style="gap:6px">
-      <div class="loc-wrap">
-        <span style="font-size:14px;opacity:.5">📍</span>
-        <input id="loc" type="text" placeholder="City (Dubai, Abu Dhabi, Riyadh...)" list="cities" value="Dubai"/>
-        <datalist id="cities">
-          <option value="Dubai"/><option value="Abu Dhabi"/><option value="Sharjah"/>
-          <option value="Ajman"/><option value="Ras Al Khaimah"/><option value="Riyadh"/>
-          <option value="Jeddah"/><option value="Kuwait"/><option value="Doha"/>
-          <option value="Muscat"/><option value="Cairo"/><option value="Amman"/>
-          <option value="Beirut"/>
-        </datalist>
-      </div>
-      <button class="btn-hunt" id="huntBtn">Hunt Prices</button>
+    <div class="trust-badges">
+      <span>✨ Real-time prices from 12 sources</span>
+      <span>💰 All prices in AED</span>
     </div>
   </div>
+</div>
 
-  <!-- BEST PRICE BANNER -->
-  <div id="banner">
-    <div style="flex:1;min-width:160px">
-      <div class="b-stat-label">Best Price Found</div>
-      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:4px">
-        <span class="b-amount" id="bAmount"></span>
-        <span class="b-src" id="bSrc"></span>
-      </div>
+<main id="home">
+  <div class="section-title">📁 Browse by Category</div>
+  <div class="categories" id="categories"></div>
+
+  <div class="section-title">🔥 Trending Searches</div>
+  <div class="trending-grid" id="trending"></div>
+</main>
+
+<main id="results">
+  <div class="results-header">
+    <div class="best-price-box" id="bestBox" style="display:none">
+      <div class="best-price-label">Best Price Found</div>
+      <div class="best-price-amount" id="bestAmt">—</div>
+      <div class="best-price-source" id="bestSrc">—</div>
     </div>
-    <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center">
-      <div><div class="b-stat-label">Results</div><div class="b-stat-val" id="bTotal">0</div></div>
-      <div><div class="b-stat-label">Best Deal</div><a class="b-btn" id="bLink" href="#" target="_blank" rel="noopener">View Listing →</a></div>
-    </div>
+    <div class="result-count" id="resultCnt"></div>
   </div>
 
-  <!-- SOURCE STATS -->
-  <div id="srcStats"></div>
+  <div class="source-stats" id="statsPills"></div>
 
-  <!-- FILTER BAR -->
-  <div id="filterbar">
-    <div class="f-sources" id="fSources">
-      <button class="f-btn active" data-src="all">⚡ All</button>
-      <button class="f-btn" data-src="amazon">🛒 Amazon.ae</button>
-      <button class="f-btn" data-src="noon">🌙 Noon</button>
-      <button class="f-btn" data-src="carrefour">🏪 Carrefour</button>
-      <button class="f-btn" data-src="sharaf">📱 Sharaf DG</button>
-      <button class="f-btn" data-src="lulu">🛍️ Lulu</button>
-      <button class="f-btn" data-src="virgin">🎵 Virgin</button>
-      <button class="f-btn" data-src="jumbo">⚡ Jumbo</button>
-      <button class="f-btn" data-src="namshi">👗 Namshi</button>
-      <button class="f-btn" data-src="desertcart">🌐 Desertcart</button>
-      <button class="f-btn" data-src="dubizzle">📍 Dubizzle</button>
-      <button class="f-btn" data-src="opensooq">🗺️ OpenSooq</button>
-      <button class="f-btn" data-src="aliexpress">🌏 AliExpress</button>
-    </div>
-    <div class="f-right">
-      <span class="f-count" id="fCount">0 results</span>
-      <select id="sort-sel">
-        <option value="price_asc">Price: Low → High</option>
-        <option value="price_desc">Price: High → Low</option>
-        <option value="source">By Source</option>
-      </select>
-    </div>
+  <div class="controls">
+    <div id="filterBtns"></div>
+    <select class="sort-sel" id="sortSel">
+      <option value="price_asc">Price: Low → High</option>
+      <option value="price_desc">Price: High → Low</option>
+      <option value="source">By Store</option>
+    </select>
   </div>
 
-  <!-- RESULTS GRID -->
   <div id="grid"></div>
-
-  <!-- HINTS (pre-search) -->
-  <div id="hints">
-    <p>Popular searches in UAE 🇦🇪</p>
-    <div class="hint-tags">
-      <span class="hint-tag">📱 iPhone 15 Pro</span>
-      <span class="hint-tag">👟 Nike Air Max</span>
-      <span class="hint-tag">💻 MacBook Air M2</span>
-      <span class="hint-tag">🎮 PS5</span>
-      <span class="hint-tag">🎧 AirPods Pro</span>
-      <span class="hint-tag">📷 Canon EOS R50</span>
-      <span class="hint-tag">🛋️ IKEA Sofa</span>
-      <span class="hint-tag">🚗 Toyota Camry</span>
-      <span class="hint-tag">📺 Samsung TV</span>
-      <span class="hint-tag">👜 Louis Vuitton Bag</span>
-    </div>
-    <div class="src-showcase">
-      <div class="src-item"><div class="si">🛒</div><strong>Amazon.ae</strong><span>UAE store</span></div>
-      <div class="src-item"><div class="si">🌙</div><strong>Noon</strong><span>MENA's biggest</span></div>
-      <div class="src-item"><div class="si">🏪</div><strong>Carrefour</strong><span>Physical + online</span></div>
-      <div class="src-item"><div class="si">📱</div><strong>Sharaf DG</strong><span>Electronics UAE</span></div>
-      <div class="src-item"><div class="si">🛍️</div><strong>Lulu</strong><span>Hypermarket</span></div>
-      <div class="src-item"><div class="si">🎵</div><strong>Virgin</strong><span>Megastore UAE</span></div>
-      <div class="src-item"><div class="si">⚡</div><strong>Jumbo</strong><span>Electronics</span></div>
-      <div class="src-item"><div class="si">👗</div><strong>Namshi</strong><span>Fashion</span></div>
-      <div class="src-item"><div class="si">🌐</div><strong>Desertcart</strong><span>Global → UAE</span></div>
-      <div class="src-item"><div class="si">📍</div><strong>Dubizzle</strong><span>Classifieds</span></div>
-      <div class="src-item"><div class="si">🗺️</div><strong>OpenSooq</strong><span>MENA listings</span></div>
-      <div class="src-item"><div class="si">🌏</div><strong>AliExpress</strong><span>Ships to UAE</span></div>
-    </div>
-    <p class="aed-note">All prices shown in AED 🇦🇪 — Covers online stores, physical stores &amp; classifieds</p>
-  </div>
 </main>
 
 <script>
-/* ─── STATE ─────────────────────────────────────────────── */
 var allResults = [];
 var activeFilter = 'all';
 var activeSort = 'price_asc';
+var searchQuery = '';
 
-/* ─── SOURCE → CSS CLASS ─────────────────────────────────── */
-function srcCls(source) {
-  var s = (source || '').toLowerCase();
-  if (s.includes('amazon'))     return 's-amazon';
-  if (s.includes('noon'))       return 's-noon';
-  if (s.includes('carrefour'))  return 's-carrefour';
-  if (s.includes('sharaf'))     return 's-sharaf';
-  if (s.includes('lulu'))       return 's-lulu';
-  if (s.includes('virgin'))     return 's-virgin';
-  if (s.includes('jumbo'))      return 's-jumbo';
-  if (s.includes('namshi'))     return 's-namshi';
-  if (s.includes('desertcart')) return 's-desertcart';
-  if (s.includes('dubizzle'))   return 's-dubizzle';
-  if (s.includes('opensooq'))   return 's-opensooq';
-  if (s.includes('aliexpress')) return 's-aliexpress';
-  return 's-default';
+/* Categories */
+var CATEGORIES = [
+  { icon: '📱', name: 'Electronics', q: 'iPhone' },
+  { icon: '👗', name: 'Fashion', q: 'shirt' },
+  { icon: '🏠', name: 'Home', q: 'sofa' },
+  { icon: '⚽', name: 'Sports', q: 'football' },
+  { icon: '💄', name: 'Beauty', q: 'perfume' },
+  { icon: '📚', name: 'Books', q: 'novel' },
+  { icon: '🎮', name: 'Gaming', q: 'PS5' },
+  { icon: '🚗', name: 'Auto', q: 'car parts' },
+];
+
+var TRENDING = [
+  { name: 'iPhone 15 Pro', price: '4,299', stores: 10, save: '15%' },
+  { name: 'Samsung TV 55"', price: '1,899', stores: 8, save: '22%' },
+  { name: 'MacBook Air M2', price: '3,299', stores: 6, save: '10%' },
+  { name: 'AirPods Pro', price: '799', stores: 9, save: '18%' },
+];
+
+function initHome() {
+  var html = '';
+  CATEGORIES.forEach(function(c) {
+    html += '<button class="cat-btn" onclick="doSearch(\'' + c.q + '\')">'
+      + '<div class="cat-icon">' + c.icon + '</div>'
+      + '<div>' + c.name + '</div>'
+      + '</button>';
+  });
+  document.getElementById('categories').innerHTML = html;
+
+  html = '';
+  TRENDING.forEach(function(t) {
+    html += '<div class="trending-card" onclick="doSearch(\'' + t.name + '\')">'
+      + '<div class="trending-save">Save ' + t.save + '</div>'
+      + '<div class="trending-name">' + t.name + '</div>'
+      + '<div class="trending-price">AED ' + t.price + '</div>'
+      + '<div class="trending-stores">' + t.stores + ' stores</div>'
+      + '</div>';
+  });
+  document.getElementById('trending').innerHTML = html;
 }
 
-function srcIcon(type) {
-  if (type === 'local') return '📍';
-  if (type === 'aliexpress') return '🌏';
-  return '🛒';
-}
+function doSearch(q) {
+  q = q || document.getElementById('q').value.trim();
+  if (!q) return;
+  searchQuery = q;
+  document.getElementById('q').value = q;
 
-/* ─── SEARCH ──────────────────────────────────────────────── */
-function doSearch() {
-  var query = document.getElementById('q').value.trim();
-  var loc   = document.getElementById('loc').value.trim();
-  if (!query) { document.getElementById('q').focus(); return; }
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('results').classList.add('show');
 
   setLoading(true);
-  document.getElementById('hints').style.display = 'none';
   activeFilter = 'all';
-  setAllFilterBtnsInactive();
-  document.querySelector('[data-src="all"]').classList.add('active');
 
-  var params = new URLSearchParams({ query: query, sources: 'all' });
-  if (loc) params.set('location', loc);
-
-  fetch('/api/search?' + params.toString())
-    .then(function(res) {
-      if (!res.ok) throw new Error('Server error ' + res.status);
-      return res.json();
-    })
-    .then(function(data) {
+  fetch('/api/search?query=' + encodeURIComponent(q))
+    .then(r => r.json())
+    .then(data => {
       allResults = data.results || [];
-      renderBanner(data.best_price, data.total);
-      renderSourceStats(data.source_stats || {});
-      showFilterBar();
+      renderBest(data.best_price);
+      renderStats(data.source_stats || {});
+      renderFilters();
+      renderSort();
       renderGrid();
     })
-    .catch(function(err) {
-      showError(err.message);
+    .catch(err => {
+      document.getElementById('grid').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>Error</h3><p>' + err + '</p></div>';
     })
-    .finally(function() {
-      setLoading(false);
-    });
+    .finally(() => setLoading(false));
 }
 
-/* ─── FILTER BUTTONS ─────────────────────────────────────── */
-function setAllFilterBtnsInactive() {
-  var btns = document.querySelectorAll('.f-btn');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].classList.remove('active');
+function renderBest(best) {
+  var box = document.getElementById('bestBox');
+  if (!best) { box.style.display = 'none'; return; }
+  document.getElementById('bestAmt').textContent = best.price_text;
+  document.getElementById('bestSrc').textContent = 'at ' + best.source;
+  box.style.display = 'block';
+}
+
+function renderStats(stats) {
+  var html = '';
+  var labels = {
+    amazon:'Amazon.ae', noon:'Noon', carrefour:'Carrefour', sharafdg:'Sharaf DG',
+    lulu:'Lulu', virgin:'Virgin', jumbo:'Jumbo', namshi:'Namshi',
+    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', aliexpress:'AliExpress'
+  };
+  for (var src in stats) {
+    var n = stats[src];
+    var lbl = labels[src] || src;
+    var cls = n > 0 ? 'has' : 'no';
+    html += '<span class="stat-pill ' + cls + '">' + lbl + ' ' + (n > 0 ? n : '✗') + '</span>';
   }
+  document.getElementById('statsPills').innerHTML = html;
+  document.getElementById('resultCnt').textContent = allResults.length + ' total result' + (allResults.length !== 1 ? 's' : '');
 }
 
-/* Wire up filter buttons using event delegation on the container */
-document.getElementById('fSources').addEventListener('click', function(e) {
-  var btn = e.target.closest('.f-btn');
-  if (!btn) return;
-  setAllFilterBtnsInactive();
-  btn.classList.add('active');
-  activeFilter = btn.getAttribute('data-src');
-  renderGrid();
-});
+function renderFilters() {
+  var sources = new Set(allResults.map(r => (r.source || '').toLowerCase()));
+  var html = '<button class="filter-btn active" onclick="setFilter(\'all\')">All Sources</button>';
+  sources.forEach(function(s) {
+    if (s) html += '<button class="filter-btn" onclick="setFilter(\'' + s + '\')">' + s + '</button>';
+  });
+  document.getElementById('filterBtns').innerHTML = html;
+}
 
-/* Sort dropdown */
-document.getElementById('sort-sel').addEventListener('change', function() {
+function setFilter(src) {
+  activeFilter = src;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGrid();
+}
+
+function renderSort() {
+  document.getElementById('sortSel').value = activeSort;
+}
+
+document.getElementById('sortSel').addEventListener('change', function() {
   activeSort = this.value;
   renderGrid();
 });
 
-/* ─── RENDER GRID ────────────────────────────────────────── */
 function renderGrid() {
-  /* Filter */
   var items = allResults.filter(function(r) {
     if (activeFilter === 'all') return true;
     return (r.source || '').toLowerCase().includes(activeFilter);
   });
 
-  /* Sort */
   var INF = 999999999;
   items = items.slice().sort(function(a, b) {
     if (activeSort === 'price_asc') {
@@ -430,13 +641,9 @@ function renderGrid() {
     if (activeSort === 'price_desc') {
       return (b.price != null ? b.price : -INF) - (a.price != null ? a.price : -INF);
     }
-    if (activeSort === 'source') {
-      return (a.source || '').localeCompare(b.source || '');
-    }
-    return 0;
+    return (a.source || '').localeCompare(b.source || '');
   });
 
-  /* Lowest price in current view */
   var lowestPrice = null;
   for (var i = 0; i < items.length; i++) {
     if (items[i].price != null && (lowestPrice === null || items[i].price < lowestPrice)) {
@@ -444,162 +651,63 @@ function renderGrid() {
     }
   }
 
-  /* Update count */
-  var cnt = items.length;
-  document.getElementById('fCount').textContent = cnt + ' result' + (cnt !== 1 ? 's' : '');
-
   var grid = document.getElementById('grid');
-
   if (items.length === 0) {
-    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different filter or search term.</p></div>';
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search term.</p></div>';
     return;
   }
 
   var html = '';
   for (var i = 0; i < items.length; i++) {
-    html += buildCard(items[i], i, lowestPrice);
+    html += buildCard(items[i], lowestPrice);
   }
   grid.innerHTML = html;
 }
 
-/* ─── BUILD CARD ─────────────────────────────────────────── */
-function buildCard(item, idx, lowestPrice) {
-  var isBest = item.price != null && item.price === lowestPrice;
-  var hasImg = item.image && item.image.indexOf('http') === 0;
-  var icon   = srcIcon(item.source_type);
-  var cls    = srcCls(item.source);
-  var delay  = Math.min(idx * 0.035, 0.35);
+function buildCard(r, lowestPrice) {
+  var isBest = r.price != null && r.price === lowestPrice;
+  var img = r.image && r.image.indexOf('http') === 0
+    ? '<img src="' + esc(r.image) + '" alt="' + esc(r.title) + '" onerror="this.style.display=\'none\'">'
+    : '<span class="no-img">📦</span>';
+  var priceHtml = r.price != null
+    ? '<div class="card-price">' + esc(r.price_text) + '</div>'
+    : '<div class="card-price" style="color:var(--gray-500);font-size:13px;">On request</div>';
 
-  var imgHtml = hasImg
-    ? '<img src="' + esc(item.image) + '" alt="' + esc(item.title) + '" onerror="this.parentNode.innerHTML=\'<span class=no-img>' + icon + '</span>\'">'
-    : '<span class="no-img">' + icon + '</span>';
-
-  var priceHtml = item.price != null
-    ? '<div class="c-price">' + esc(item.price_text) + '</div>'
-    : '<div class="c-price noprice">' + esc(item.price_text || 'Price on request') + '</div>';
-
-  var meta = '';
-  if (item.condition) meta += metaLine('✅', item.condition);
-  if (item.location)  meta += metaLine('📍', item.location);
-  if (item.shipping)  meta += metaLine('🚚', item.shipping);
-  if (item.rating)    meta += metaLine('⭐', item.rating);
-
-  return '<div class="card' + (isBest ? ' best' : '') + '" style="animation-delay:' + delay + 's">'
-    + (isBest ? '<div class="best-badge">BEST PRICE</div>' : '')
-    + '<a class="card-link" href="' + esc(item.url) + '" target="_blank" rel="noopener">'
-    + '<div class="c-img">' + imgHtml + '</div>'
-    + '<div class="c-body">'
-    + '<div class="src-badge ' + cls + '">' + icon + ' ' + esc(item.source) + '</div>'
-    + '<div class="c-title">' + esc(item.title) + '</div>'
+  return '<a href="' + esc(r.url) + '" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">'
+    + '<div class="card' + (isBest ? ' best' : '') + '">'
+    + (isBest ? '<div class="best-badge">BEST</div>' : '')
+    + '<div class="card-img">' + img + '</div>'
+    + '<div class="card-body">'
+    + '<div class="src-badge">' + esc(r.source) + '</div>'
+    + '<div class="card-title">' + esc(r.title) + '</div>'
     + priceHtml
-    + '<div class="c-meta">' + meta + '</div>'
-    + '<div class="c-cta">View listing →</div>'
-    + '</div></a></div>';
+    + '</div></div></a>';
 }
 
-function metaLine(icon, text) {
-  return '<div class="mline"><span>' + icon + '</span><span>' + esc(text) + '</span></div>';
-}
-
-/* ─── BANNER ─────────────────────────────────────────────── */
-function renderBanner(best, total) {
-  var el = document.getElementById('banner');
-  if (!best) { el.style.display = 'none'; return; }
-  document.getElementById('bAmount').textContent = best.price_text;
-  document.getElementById('bSrc').textContent    = best.source;
-  document.getElementById('bTotal').textContent  = total;
-  document.getElementById('bLink').href          = best.url;
-  el.style.display = 'flex';
-}
-
-/* ─── SOURCE STATS ───────────────────────────────────────── */
-function renderSourceStats(stats) {
-  var el = document.getElementById('srcStats');
-  if (!stats || Object.keys(stats).length === 0) { el.style.display = 'none'; return; }
-
-  var LABELS = {
-    amazon:'Amazon.ae', noon:'Noon', carrefour:'Carrefour', sharafdg:'Sharaf DG',
-    lulu:'Lulu', virgin:'Virgin', jumbo:'Jumbo', namshi:'Namshi',
-    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', aliexpress:'AliExpress'
-  };
-
-  var html = '';
-  Object.keys(stats).forEach(function(src) {
-    var n = stats[src];
-    var label = LABELS[src] || src;
-    var cls = n > 0 ? 'has-results' : 'no-results';
-    html += '<span class="ss-pill ' + cls + '">' + label + ' ' + (n > 0 ? n : '✗') + '</span>';
-  });
-  el.innerHTML = html;
-  el.style.display = 'flex';
-}
-
-function showFilterBar() {
-  document.getElementById('filterbar').style.display = 'flex';
-}
-
-/* ─── LOADING ────────────────────────────────────────────── */
 function setLoading(on) {
-  var btn  = document.getElementById('huntBtn');
+  var btn = document.getElementById('huntBtn');
   var grid = document.getElementById('grid');
   if (on) {
     btn.disabled = true;
-    btn.innerHTML = '<span class="spin"></span> Hunting across 12 sources...';
-    var skel = '';
-    for (var i = 0; i < 12; i++) {
-      skel += '<div class="skel" style="animation-delay:' + (i * 0.04) + 's">'
-        + '<div class="skel-img"></div>'
-        + '<div class="skel-body">'
-        + '<div class="skel-line" style="height:11px;width:48%"></div>'
-        + '<div class="skel-line" style="height:11px"></div>'
-        + '<div class="skel-line" style="height:11px;width:72%"></div>'
-        + '<div class="skel-line" style="height:22px;width:42%"></div>'
-        + '</div></div>';
-    }
-    grid.innerHTML = skel;
+    btn.textContent = '⏳ Hunting...';
+    grid.innerHTML = '<div class="skel" style="height:300px"></div>'.repeat(12);
   } else {
     btn.disabled = false;
-    btn.innerHTML = 'Hunt Prices';
+    btn.textContent = 'Hunt Prices';
   }
 }
 
-/* ─── ERROR ──────────────────────────────────────────────── */
-function showError(msg) {
-  document.getElementById('grid').innerHTML =
-    '<div class="empty-state"><div class="icon">⚠️</div>'
-    + '<h3>Could not fetch results</h3>'
-    + '<p>' + esc(msg) + '</p>'
-    + '<p style="margin-top:8px;color:var(--dim);font-size:12px">Make sure the backend is running on port 8000.</p>'
-    + '</div>';
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/* ─── HINT TAGS ──────────────────────────────────────────── */
-document.getElementById('hints').addEventListener('click', function(e) {
-  var tag = e.target.closest('.hint-tag');
-  if (!tag) return;
-  var text = tag.textContent.replace(/^\S+\s/, '').trim();
-  document.getElementById('q').value = text;
-  doSearch();
-});
-
-/* ─── KEYBOARD ───────────────────────────────────────────── */
 document.getElementById('q').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') doSearch();
 });
-document.getElementById('loc').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') doSearch();
-});
-
-/* ─── SEARCH BUTTON ──────────────────────────────────────── */
 document.getElementById('huntBtn').addEventListener('click', doSearch);
 
-/* ─── ESCAPE HTML ────────────────────────────────────────── */
-function esc(s) {
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+initHome();
 </script>
 </body>
 </html>
