@@ -1,5 +1,5 @@
 """PriceHunt API — UAE/MENA comprehensive price aggregator."""
-import asyncio, os
+import asyncio, os, re
 from typing import Optional
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +32,36 @@ SCRAPERS = {
 
 ALL_SOURCES = list(SCRAPERS.keys())
 
+# ── Result validation ─────────────────────────────────────────────────────────
+_JUNK_PHRASES = [
+    "browse by category", "you searched for", "sign in", "log in", "my account",
+    "shopping cart", "wishlist", "free delivery on orders", "download the app",
+    "download app", "cookie policy", "privacy policy", "terms and conditions",
+    "terms of use", "customer service", "track your order", "become a seller",
+    "back to top", "newsletter", "subscribe", "all rights reserved",
+    "contact us", "about us", "store locator",
+]
+
+def _is_valid_result(r: dict) -> bool:
+    """Return False for results that are clearly scraped UI chrome, not products."""
+    title = (r.get("title") or "").strip()
+    price = r.get("price")
+
+    # Too short to be a product name
+    if len(title) < 6:
+        return False
+
+    # Looks like a navigation / UI element
+    tl = title.lower()
+    if any(phrase in tl for phrase in _JUNK_PHRASES):
+        return False
+
+    # Sanity-check numeric price (0.5–500,000 AED covers everything realistically)
+    if price is not None and (price < 0.5 or price > 500_000):
+        return False
+
+    return True
+
 
 @app.get("/api/search")
 async def search(
@@ -57,8 +87,10 @@ async def search(
             errors.append({"source": src, "error": str(result)})
             source_stats[src] = 0
         else:
-            all_results.extend(result)
-            source_stats[src] = len(result)
+            # Filter garbage before counting
+            valid = [r for r in result if _is_valid_result(r)]
+            all_results.extend(valid)
+            source_stats[src] = len(valid)
 
     all_results.sort(key=lambda x: (x["price"] is None, x["price"] or 0))
     best = next((r for r in all_results if r["price"] is not None), None)
@@ -82,18 +114,18 @@ async def search(
 @app.get("/api/sources")
 async def list_sources():
     return {"sources": [
-        {"id": "amazon",     "name": "Amazon.ae",       "type": "web",       "icon": "🛒"},
-        {"id": "noon",       "name": "Noon",             "type": "web",       "icon": "🌙"},
-        {"id": "carrefour",  "name": "Carrefour UAE",    "type": "web",       "icon": "🏪"},
-        {"id": "sharafdg",   "name": "Sharaf DG",        "type": "web",       "icon": "📱"},
-        {"id": "lulu",       "name": "Lulu Hypermarket", "type": "web",       "icon": "🛍️"},
-        {"id": "virgin",     "name": "Virgin Megastore", "type": "web",       "icon": "🎵"},
-        {"id": "jumbo",      "name": "Jumbo Electronics","type": "web",       "icon": "⚡"},
-        {"id": "namshi",     "name": "Namshi",           "type": "web",       "icon": "👗"},
-        {"id": "desertcart", "name": "Desertcart",       "type": "web",       "icon": "🌐"},
-        {"id": "dubizzle",   "name": "Dubizzle",         "type": "local",     "icon": "📍"},
-        {"id": "opensooq",   "name": "OpenSooq",         "type": "local",     "icon": "🗺️"},
-        {"id": "aliexpress", "name": "AliExpress",        "type": "web",       "icon": "🌏"},
+        {"id": "amazon",     "name": "Amazon.ae",        "type": "web",   "icon": "🛒"},
+        {"id": "noon",       "name": "Noon",              "type": "web",   "icon": "🌙"},
+        {"id": "carrefour",  "name": "Carrefour UAE",     "type": "web",   "icon": "🏪"},
+        {"id": "sharafdg",   "name": "Sharaf DG",         "type": "web",   "icon": "📱"},
+        {"id": "lulu",       "name": "Lulu Hypermarket",  "type": "web",   "icon": "🛍️"},
+        {"id": "virgin",     "name": "Virgin Megastore",  "type": "web",   "icon": "🎵"},
+        {"id": "jumbo",      "name": "Jumbo Electronics", "type": "web",   "icon": "⚡"},
+        {"id": "namshi",     "name": "Namshi",            "type": "web",   "icon": "👗"},
+        {"id": "desertcart", "name": "Desertcart",        "type": "web",   "icon": "🌐"},
+        {"id": "dubizzle",   "name": "Dubizzle",          "type": "local", "icon": "📍"},
+        {"id": "opensooq",   "name": "OpenSooq",          "type": "local", "icon": "🗺️"},
+        {"id": "aliexpress", "name": "AliExpress",        "type": "web",   "icon": "🌏"},
     ]}
 
 
