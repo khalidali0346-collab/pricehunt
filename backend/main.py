@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 
 from scrapers import (
     dubizzle, amazon_ae, noon, carrefour_ae, sharaf_dg, opensooq,
-    lulu, virgin, jumbo, namshi, aliexpress, desertcart, ebay, google_shopping,
+    lulu, virgin, jumbo, namshi, aliexpress, desertcart, ebay, google_shopping, emax,
 )
 
 app = FastAPI(title="PriceHunt UAE/MENA API", version="3.0.0")
@@ -29,6 +29,7 @@ SCRAPERS = {
     "aliexpress":  (aliexpress.scrape,      False),
     "ebay":        (ebay.scrape,            False),
     "google":      (google_shopping.scrape, False),
+    "emax":        (emax.scrape,            False),
 }
 
 ALL_SOURCES = list(SCRAPERS.keys())
@@ -174,6 +175,64 @@ async def search(
     }
 
 
+@app.get("/api/compare")
+async def compare(
+    query: str = Query(...),
+    location: Optional[str] = Query("Dubai"),
+):
+    """
+    Returns price comparison in clean JSON format — retailer, price, condition,
+    URL, in_stock, shipping — sorted by price low to high.
+    Used-condition listings (Dubizzle, OpenSooq) are labelled separately.
+    """
+    source_list = ALL_SOURCES
+
+    coros = []
+    for src in source_list:
+        fn, needs_loc = SCRAPERS[src]
+        coros.append(fn(query, location) if needs_loc else fn(query))
+
+    results_list = await asyncio.gather(*coros, return_exceptions=True)
+
+    all_results = []
+    for src, result in zip(source_list, results_list):
+        if isinstance(result, Exception):
+            continue
+        for r in result:
+            if not _is_valid_result(r):
+                continue
+            r["_relevance"] = _relevance_score(r.get("title", ""), query)
+            all_results.append(r)
+
+    # Sort: relevance first, then price
+    all_results.sort(key=lambda x: (-x["_relevance"], x["price"] is None, x["price"] or 0))
+
+    output = []
+    for r in all_results:
+        source_type = r.get("source_type", "web")
+        condition = r.get("condition", "New")
+        if source_type == "local" or "used" in condition.lower():
+            condition_label = "used"
+        elif "open" in condition.lower():
+            condition_label = "open box"
+        else:
+            condition_label = "new"
+
+        output.append({
+            "retailer": r.get("source", ""),
+            "price": r.get("price"),
+            "price_text": r.get("price_text", ""),
+            "condition": condition_label,
+            "url": r.get("url", ""),
+            "in_stock": r.get("in_stock", True),
+            "shipping": r.get("shipping") or "Contact seller",
+            "title": r.get("title", ""),
+            "image": r.get("image", ""),
+        })
+
+    return output
+
+
 @app.get("/api/sources")
 async def list_sources():
     return {"sources": [
@@ -191,6 +250,7 @@ async def list_sources():
         {"id": "aliexpress", "name": "AliExpress",        "type": "web",   "icon": "🌏"},
         {"id": "ebay",       "name": "eBay",              "type": "web",   "icon": "🛍️"},
         {"id": "google",     "name": "Google Shopping",   "type": "web",   "icon": "🔍"},
+        {"id": "emax",       "name": "Emax",              "type": "web",   "icon": "💡"},
     ]}
 
 
