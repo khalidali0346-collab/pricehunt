@@ -493,6 +493,7 @@ main {
   <div class="controls">
     <div id="filterBtns"></div>
     <select class="sort-sel" id="sortSel">
+      <option value="relevance">Best Match</option>
       <option value="price_asc">Price: Low → High</option>
       <option value="price_desc">Price: High → Low</option>
       <option value="source">By Store</option>
@@ -505,7 +506,7 @@ main {
 <script>
 var allResults = [];
 var activeFilter = 'all';
-var activeSort = 'price_asc';
+var activeSort = 'relevance';
 var searchQuery = '';
 
 /* Categories */
@@ -590,7 +591,7 @@ function renderStats(stats) {
   var labels = {
     amazon:'Amazon.ae', noon:'Noon', carrefour:'Carrefour', sharafdg:'Sharaf DG',
     lulu:'Lulu', virgin:'Virgin', jumbo:'Jumbo', namshi:'Namshi',
-    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', aliexpress:'AliExpress', ebay:'eBay'
+    desertcart:'Desertcart', dubizzle:'Dubizzle', opensooq:'OpenSooq', aliexpress:'AliExpress', ebay:'eBay', google:'Google Shopping'
   };
   for (var src in stats) {
     var n = stats[src];
@@ -635,6 +636,12 @@ function renderGrid() {
 
   var INF = 999999999;
   items = items.slice().sort(function(a, b) {
+    if (activeSort === 'relevance') {
+      var ra = a._relevance != null ? a._relevance : 0;
+      var rb = b._relevance != null ? b._relevance : 0;
+      if (rb !== ra) return rb - ra;
+      return (a.price != null ? a.price : INF) - (b.price != null ? b.price : INF);
+    }
     if (activeSort === 'price_asc') {
       return (a.price != null ? a.price : INF) - (b.price != null ? b.price : INF);
     }
