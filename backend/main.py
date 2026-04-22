@@ -1,6 +1,7 @@
 """PriceHunt API — UAE/MENA comprehensive price aggregator."""
 import asyncio, os, re
 from typing import Optional
+from urllib.parse import quote_plus
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -257,6 +258,90 @@ async def list_sources():
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "region": "UAE/MENA", "sources": len(SCRAPERS)}
+
+
+@app.get("/api/debug")
+async def debug(query: str = Query("iphone 15"), location: str = Query("Dubai")):
+    """Run all scrapers and return per-source diagnostics."""
+    import traceback
+    from scrapers.browser import fetch_rendered, PLAYWRIGHT_AVAILABLE
+
+    diagnostics = {"playwright_available": PLAYWRIGHT_AVAILABLE, "sources": {}}
+
+    async def run_one(src):
+        fn, needs_loc = SCRAPERS[src]
+        try:
+            results = await (fn(query, location) if needs_loc else fn(query))
+            valid = [r for r in results if _is_valid_result(r)]
+            sample = valid[:2] if valid else results[:2]
+            return {
+                "status": "ok",
+                "total_raw": len(results),
+                "total_valid": len(valid),
+                "sample": sample,
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "error": str(e),
+                "traceback": traceback.format_exc()[-500:],
+            }
+
+    tasks = {src: run_one(src) for src in ALL_SOURCES}
+    results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+    for src, res in zip(tasks.keys(), results):
+        diagnostics["sources"][src] = res if not isinstance(res, Exception) else {
+            "status": "exception", "error": str(res)
+        }
+
+    return diagnostics
+
+
+@app.get("/api/debug/raw")
+async def debug_raw(query: str = Query("iphone 15")):
+    """Raw HTTP probe — checks HTTP status + HTML snippet for each search URL without running full scrapers."""
+    import httpx
+    from scrapers.utils import get_headers
+    from scrapers.browser import PLAYWRIGHT_AVAILABLE
+
+    q = quote_plus(query)
+    TEST_URLS = {
+        "amazon":    f"https://www.amazon.ae/s?k={q}&s=price-asc-rank",
+        "ebay":      f"https://www.ebay.com/sch/i.html?_nkw={q}&_sop=15&LH_BIN=1",
+        "google":    f"https://www.google.com/search?q={q}&tbm=shop&hl=en&gl=ae",
+        "jumbo":     f"https://www.jumbo.ae/catalogsearch/result/?q={q}",
+        "sharafdg":  f"https://www.sharafdg.com/search/?q={q}",
+        "emax":      f"https://www.emax.ae/catalogsearch/result/?q={q}",
+        "desertcart":f"https://www.desertcart.ae/search?q={q}",
+        "noon":      f"https://www.noon.com/uae-en/search/?q={q}",
+        "namshi":    f"https://en-ae.namshi.com/search/?q={q}",
+    }
+
+    PRODUCT_SIGNALS = [
+        "product-item", "s-item__title", "data-asin", "productContainer",
+        "product-card", "search-result", "product-name", "item-title",
+        "add-to-cart", "addtocart", "__NEXT_DATA__", "application/ld+json",
+    ]
+
+    results = {"playwright_available": PLAYWRIGHT_AVAILABLE, "probes": {}}
+    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
+        for name, url in TEST_URLS.items():
+            try:
+                r = await client.get(url, headers=get_headers(url))
+                html = r.text
+                found_signals = [s for s in PRODUCT_SIGNALS if s in html]
+                results["probes"][name] = {
+                    "status": r.status_code,
+                    "html_size": len(html),
+                    "product_signals": found_signals,
+                    "has_products": len(found_signals) > 0,
+                    "final_url": str(r.url),
+                    "html_preview": html[:400].replace("\n", " ").strip(),
+                }
+            except Exception as e:
+                results["probes"][name] = {"status": "error", "error": str(e)}
+
+    return results
 
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
