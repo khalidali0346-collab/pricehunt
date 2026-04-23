@@ -13,15 +13,27 @@ async def scrape(query: str) -> list[dict]:
     try:
         async with httpx.AsyncClient(follow_redirects=True, timeout=20) as client:
             r = await client.get(url, headers=get_headers("https://www.ebay.com"))
-            r.raise_for_status()
+            if r.status_code != 200:
+                return []
+            html = r.text
     except Exception:
         return []
 
-    soup = BeautifulSoup(r.text, "lxml")
+    # eBay sometimes returns a consent/interstitial page — detect it
+    if "s-item" not in html and "srp-results" not in html:
+        return []
+
+    soup = BeautifulSoup(html, "lxml")
     results = []
 
     for item in soup.select("li.s-item")[:24]:
-        title_el = item.select_one("div.s-item__title span")
+        # Title lives inside s-item__title — could be a span, h3, or div
+        title_el = (
+            item.select_one(".s-item__title span[role='heading']")
+            or item.select_one(".s-item__title span")
+            or item.select_one("h3.s-item__title")
+            or item.select_one(".s-item__title")
+        )
         price_el = item.select_one("span.s-item__price")
         link_el = item.select_one("a.s-item__link")
         img_el = item.select_one("img.s-item__image-img")
@@ -33,7 +45,7 @@ async def scrape(query: str) -> list[dict]:
             continue
 
         title = title_el.get_text(strip=True)
-        if title in ("Shop on eBay", ""):
+        if not title or title in ("Shop on eBay", "New Listing"):
             continue
 
         price_text = price_el.get_text(strip=True)
