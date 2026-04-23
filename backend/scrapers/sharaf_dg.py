@@ -1,15 +1,17 @@
-"""Sharaf DG scraper — Playwright-powered."""
+"""Sharaf DG UAE — Magento 2 store."""
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
-from .browser import fetch_rendered
+from .browser import fetch_with_session, fetch_rendered
 from .utils import parse_price
 
 BASE = "https://www.sharafdg.com"
 
 
 async def scrape(query: str) -> list[dict]:
-    url = f"{BASE}/search?q={quote_plus(query)}&sort=price+asc"
-    html = await fetch_rendered(url, wait_selector="li.product-item, div.product-item")
+    url = f"{BASE}/search?q={quote_plus(query)}&product_list_order=price"
+    html = await fetch_with_session(url, BASE)
+    if not html or "product-item" not in html:
+        html = await fetch_rendered(url, wait_selector="li.product-item, div.product-item")
     if not html:
         return []
 

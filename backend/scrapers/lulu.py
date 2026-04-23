@@ -1,7 +1,8 @@
-"""Lulu Hypermarket UAE — Playwright-powered."""
+"""Lulu Hypermarket UAE — session fetch with Playwright fallback."""
+import json
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
-from .browser import fetch_rendered
+from .browser import fetch_with_session, fetch_rendered
 from .utils import parse_price
 
 BASE = "https://www.luluhypermarket.com"
@@ -9,7 +10,9 @@ BASE = "https://www.luluhypermarket.com"
 
 async def scrape(query: str) -> list[dict]:
     url = f"{BASE}/en-ae/search?q={quote_plus(query)}&sortBy=Price+ascending"
-    html = await fetch_rendered(url, wait_selector="div.product-item, li.product-item, div[class*='product-card']")
+    html = await fetch_with_session(url, BASE)
+    if not html or ("product-item" not in html and "__NEXT_DATA__" not in html):
+        html = await fetch_rendered(url, wait_selector="div.product-item, li.product-item, div[class*='product-card']")
     if not html:
         return []
 

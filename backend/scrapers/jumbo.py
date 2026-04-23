@@ -1,7 +1,7 @@
-"""Jumbo Electronics UAE — Playwright-powered."""
+"""Jumbo Electronics UAE — Magento 2 store."""
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
-from .browser import fetch_rendered
+from .browser import fetch_with_session, fetch_rendered
 from .utils import parse_price
 
 BASE = "https://www.jumbo.ae"
@@ -9,7 +9,10 @@ BASE = "https://www.jumbo.ae"
 
 async def scrape(query: str) -> list[dict]:
     url = f"{BASE}/catalogsearch/result/?q={quote_plus(query)}&product_list_order=price"
-    html = await fetch_rendered(url, wait_selector="li.product-item, div.product-item")
+    # Try session-warmed fetch first (homepage → search), then Playwright fallback
+    html = await fetch_with_session(url, BASE)
+    if not html or "product-item" not in html:
+        html = await fetch_rendered(url, wait_selector="li.product-item, div.product-item")
     if not html:
         return []
 
