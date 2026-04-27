@@ -344,6 +344,24 @@ async def debug_raw(query: str = Query("iphone 15")):
     return results
 
 
+@app.get("/api/autocomplete")
+async def autocomplete(q: str = Query(...)):
+    """Return Google search suggestions for the query."""
+    import httpx
+    if len(q) < 2:
+        return []
+    url = f"https://suggestqueries.google.com/complete/search?client=firefox&q={quote_plus(q)}&hl=en"
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=5) as client:
+            r = await client.get(url, headers={"Accept-Language": "en-AE,en;q=0.9"})
+            if r.status_code == 200:
+                data = r.json()
+                return data[1][:8] if isinstance(data, list) and len(data) > 1 else []
+    except Exception:
+        pass
+    return []
+
+
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
 @app.get("/")
