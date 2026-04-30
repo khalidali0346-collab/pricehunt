@@ -126,6 +126,19 @@ async def fetch_with_session(url: str, home_url: str) -> str:
     return await _httpx_fetch(url)
 
 
+async def test_playwright() -> dict:
+    """Launch a real Chromium page and return a status dict for diagnostics."""
+    if not PLAYWRIGHT_AVAILABLE:
+        return {"ok": False, "reason": "playwright package not installed"}
+    try:
+        html = await _playwright_fetch("https://www.google.com", "", 1.0, 15000)
+        if "google" in html.lower():
+            return {"ok": True, "html_size": len(html)}
+        return {"ok": False, "reason": "unexpected response", "html_size": len(html)}
+    except Exception as e:
+        return {"ok": False, "reason": str(e)}
+
+
 async def fetch_rendered(
     url: str,
     wait_selector: str = None,
@@ -140,7 +153,7 @@ async def fetch_rendered(
         if PLAYWRIGHT_AVAILABLE:
             try:
                 return await _playwright_fetch(url, wait_selector, extra_wait, timeout)
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[Playwright] FAILED for {url} — {e}", flush=True)
 
         return await _httpx_fetch(url)

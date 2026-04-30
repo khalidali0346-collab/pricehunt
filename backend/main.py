@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse
 from scrapers import (
     dubizzle, amazon_ae, noon, carrefour_ae, sharaf_dg, opensooq,
     lulu, virgin, jumbo, namshi, aliexpress, desertcart, ebay, google_shopping, emax,
+    microless,
 )
 
 app = FastAPI(title="PriceHunt UAE/MENA API", version="3.0.0")
@@ -31,6 +32,7 @@ SCRAPERS = {
     "ebay":        (ebay.scrape,            False),
     "google":      (google_shopping.scrape, False),
     "emax":        (emax.scrape,            False),
+    "microless":   (microless.scrape,       False),
 }
 
 ALL_SOURCES = list(SCRAPERS.keys())
@@ -252,6 +254,7 @@ async def list_sources():
         {"id": "ebay",       "name": "eBay",              "type": "web",   "icon": "🛍️"},
         {"id": "google",     "name": "Google Shopping",   "type": "web",   "icon": "🔍"},
         {"id": "emax",       "name": "Emax",              "type": "web",   "icon": "💡"},
+        {"id": "microless",  "name": "Microless UAE",     "type": "web",   "icon": "🔧"},
     ]}
 
 
@@ -342,6 +345,15 @@ async def debug_raw(query: str = Query("iphone 15")):
                 results["probes"][name] = {"status": "error", "error": str(e)}
 
     return results
+
+
+@app.get("/api/playwright-test")
+async def playwright_test():
+    """Check whether Playwright + Chromium are actually working."""
+    from scrapers.browser import test_playwright, PLAYWRIGHT_AVAILABLE
+    result = await test_playwright()
+    result["playwright_installed"] = PLAYWRIGHT_AVAILABLE
+    return result
 
 
 @app.get("/api/autocomplete")

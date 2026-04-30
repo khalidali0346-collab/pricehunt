@@ -69,7 +69,63 @@ async def _extract_algolia_creds(html: str):
     return None, None
 
 
+async def _try_internal_api(query: str) -> list[dict]:
+    """Try Noon's undocumented internal search endpoints — no Playwright needed."""
+    endpoints = [
+        f"{BASE}/uae-en/search/?q={quote_plus(query)}&format=json",
+        f"https://api.noon.com/catalog/v3/search?q={quote_plus(query)}&country_code=AE&lang=en&limit=20",
+        f"{BASE}/api/v1/catalog/search?q={quote_plus(query)}&country=AE&lang=en",
+    ]
+    headers = get_headers(BASE)
+    headers["Accept"] = "application/json"
+    headers["X-Requested-With"] = "XMLHttpRequest"
+
+    for ep in endpoints:
+        try:
+            async with httpx.AsyncClient(follow_redirects=True, timeout=12, http2=True) as client:
+                r = await client.get(ep, headers=headers)
+                if r.status_code != 200:
+                    continue
+                ct = r.headers.get("content-type", "")
+                if "json" not in ct:
+                    continue
+                data = r.json()
+                hits = (
+                    data.get("hits") or data.get("products") or data.get("results")
+                    or data.get("data", {}).get("hits") or []
+                )
+                results = []
+                for h in hits[:20]:
+                    title = h.get("name") or h.get("title", "")
+                    price = h.get("sale_price") or h.get("price") or h.get("current_price")
+                    if not title or price is None:
+                        continue
+                    sku = h.get("sku") or h.get("id", "")
+                    img_keys = h.get("image_keys") or []
+                    img_key = img_keys[0] if img_keys else h.get("thumbnail", "")
+                    img_url = (f"https://f.nooncdn.com/p/{img_key}?format=avif"
+                               if img_key and not img_key.startswith("http") else img_key or None)
+                    results.append({
+                        "title": title, "price": float(price),
+                        "price_text": f"AED {float(price):,.2f}",
+                        "source": "Noon", "source_type": "web",
+                        "url": f"{BASE}/uae-en/{sku}/",
+                        "image": img_url, "location": "UAE",
+                        "shipping": "Noon Express", "condition": "New", "currency": "AED",
+                    })
+                if results:
+                    return results
+        except Exception:
+            continue
+    return []
+
+
 async def scrape(query: str) -> list[dict]:
+    # ── 0. Try internal API first (no browser needed) ──
+    results = await _try_internal_api(query)
+    if results:
+        return results
+
     url = f"{BASE}/uae-en/search/?q={quote_plus(query)}&sortBy=price_asc"
 
     # ── 1. Try fetching page (Playwright or httpx) ──
